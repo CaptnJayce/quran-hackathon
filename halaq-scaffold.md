@@ -66,12 +66,11 @@ Host creates room → Friends join via link → Ayahs display one at a time
 
 ```
 Frontend       React + TypeScript + Vite
-Styling        Tailwind CSS
 Real-time      Supabase Realtime (room sync, turn management)
 Auth           Quran Foundation OAuth2 PKCE (no custom auth)
 Quran data     Quran Foundation JS SDK + REST APIs
 AI / Semantic  Quran MCP (mcp.quran.ai) — free, no key needed
-Hosting        Vercel (free tier)
+Hosting        Netlify (free tier)
 ```
 
 No Express server. No custom backend. No user database.
