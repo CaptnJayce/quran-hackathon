@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 export function Home() {
-	const { user } = useAuth()
+	const { user, isLoading } = useAuth()
 	const navigate = useNavigate()
 
 	async function createRoom() {
@@ -35,6 +35,12 @@ export function Home() {
 
 		navigate(`/room/${room.id}`)
 	}
+
+	if (isLoading) return (
+		<div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+			<div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+		</div>
+	)
 
 	return (
 		<div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-between px-4 py-10 gap-6">
