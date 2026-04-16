@@ -14,7 +14,7 @@ export function LoginButton() {
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 					placeholder="Your name"
-					className="flex-1 px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl focus:outline-none focus:border-emerald-500"
+					className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:border-emerald-500"
 					onKeyDown={(e) => e.key === 'Enter' && name.trim() && devLogin(name.trim())}
 				/>
 				<button

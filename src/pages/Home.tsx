@@ -1,6 +1,8 @@
 import { HeroSection } from '../components/home/HeroSection'
 import { LoginButton } from '../components/home/LoginButton'
 import { JoinForm } from '../components/home/JoinForm'
+import { FeatureHighlights } from '../components/home/FeatureHighlights'
+import { TeamSection } from '../components/home/TeamSection'
 import { useAuth } from '../auth/AuthProvider'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
@@ -35,11 +37,15 @@ export function Home() {
 	}
 
 	return (
-		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center px-4">
-			<HeroSection />
+		<div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-between px-4 py-10 gap-6">
+			<div className="flex flex-col items-center gap-6 w-full">
+				<HeroSection />
+				<FeatureHighlights />
+			</div>
+
 			{user ? (
-				<div className="flex flex-col gap-4 w-full max-w-sm mt-8">
-					<p className="text-center text-stone-400 text-sm">Salaam, {user.displayName}</p>
+				<div className="flex flex-col gap-4 w-full max-w-sm">
+					<p className="text-center text-zinc-400 text-sm">Salaam, {user.displayName}</p>
 					<button
 						onClick={createRoom}
 						className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors"
@@ -49,11 +55,13 @@ export function Home() {
 					<JoinForm />
 				</div>
 			) : (
-				<div className="flex flex-col gap-4 w-full max-w-sm mt-8">
+				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<LoginButton />
 					<JoinForm />
 				</div>
 			)}
+
+			<TeamSection />
 		</div>
 	)
 }
