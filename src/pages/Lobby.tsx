@@ -7,13 +7,23 @@ import { ParticipantCard } from '../components/lobby/ParticipantCard'
 import { InviteLink } from '../components/lobby/InviteLink'
 import { StartButton } from '../components/lobby/StartButton'
 import { supabase } from '../lib/supabase'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { getSurah } from '../lib/quranApi'
 
 export function Lobby() {
 	const { id } = useParams<{ id: string }>()
 	const { user } = useAuth()
 	const navigate = useNavigate()
 	const { room, participants, error } = useRoom(id)
+	const [surahName, setSurahName] = useState<string | null>(null)
+
+	useEffect(() => {
+		if (room?.surah_id) {
+			getSurah(room.surah_id).then((s) => setSurahName(s.name_simple)).catch(() => setSurahName(`Surah ${room.surah_id}`))
+		} else {
+			setSurahName(null)
+		}
+	}, [room?.surah_id])
 
 	// Redirect when session goes active
 	useEffect(() => {
@@ -60,10 +70,20 @@ export function Lobby() {
 			<h1 className="text-2xl font-bold">Waiting Room</h1>
 			<InviteLink code={room.code} />
 
-			{isHost && (
+			{isHost ? (
 				<div className="w-full max-w-md flex flex-col gap-4">
 					<SurahSelector selected={room.surah_id} onSelect={selectSurah} />
 					<JuzSelector selected={room.juz_number} onSelect={selectJuz} />
+				</div>
+			) : (room.surah_id || room.juz_number) ? (
+				<div className="w-full max-w-md px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-stone-300 text-sm text-center">
+					{room.surah_id
+						? `Reading: ${surahName ?? `Surah ${room.surah_id}`}`
+						: `Reading: Juz ${room.juz_number}`}
+				</div>
+			) : (
+				<div className="w-full max-w-md px-4 py-3 bg-stone-900 border border-stone-800 rounded-xl text-stone-500 text-sm text-center">
+					Waiting for host to select a surah or juz...
 				</div>
 			)}
 
