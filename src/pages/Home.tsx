@@ -4,10 +4,12 @@ import { JoinForm } from '../components/home/JoinForm'
 import { useAuth } from '../auth/AuthProvider'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useState } from 'react'
 
 export function Home() {
-	const { user } = useAuth()
+	const { user, devLogin } = useAuth()
 	const navigate = useNavigate()
+	const [devName, setDevName] = useState('')
 
 	async function createRoom() {
 		if (!user) return
@@ -37,6 +39,22 @@ export function Home() {
 	return (
 		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center px-4">
 			<HeroSection />
+			{import.meta.env.DEV && !user && (
+				<div className="flex gap-2 mt-4 w-full max-w-sm">
+					<input
+						value={devName}
+						onChange={(e) => setDevName(e.target.value)}
+						placeholder="Dev name"
+						className="flex-1 px-3 py-2 bg-stone-800 border border-yellow-600 rounded-lg text-sm focus:outline-none"
+					/>
+					<button
+						onClick={() => devName && devLogin(devName)}
+						className="px-4 py-2 bg-yellow-700 hover:bg-yellow-600 rounded-lg text-sm font-semibold transition-colors"
+					>
+						Dev Login
+					</button>
+				</div>
+			)}
 			{user ? (
 				<div className="flex flex-col gap-4 w-full max-w-sm mt-8">
 					<p className="text-center text-stone-400 text-sm">Salaam, {user.displayName}</p>
