@@ -42,6 +42,16 @@ export function Lobby() {
 		await supabase.from('rooms').update({ juz_number: juzNumber, surah_id: null }).eq('id', id)
 	}
 
+	async function leaveRoom() {
+		if (!id || !user) return
+		if (user.sub === room?.host_id) {
+			await supabase.from('rooms').update({ status: 'complete' }).eq('id', id)
+		} else {
+			await supabase.from('participants').delete().eq('room_id', id).eq('user_sub', user.sub)
+		}
+		navigate('/')
+	}
+
 	async function startSession() {
 		if (!id || !room || !user || room.host_id !== user.sub) return
 
@@ -67,7 +77,15 @@ export function Lobby() {
 
 	return (
 		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center px-4 py-8 gap-6">
-			<h1 className="text-2xl font-bold">Waiting Room</h1>
+			<div className="w-full max-w-md flex items-center justify-between">
+				<h1 className="text-2xl font-bold">Waiting Room</h1>
+				<button
+					onClick={leaveRoom}
+					className="text-sm text-stone-500 hover:text-red-400 transition-colors"
+				>
+					{isHost ? 'Cancel Room' : 'Leave'}
+				</button>
+			</div>
 			<InviteLink code={room.code} />
 
 			{isHost ? (
