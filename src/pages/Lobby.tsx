@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useRoom } from '../hooks/useRoom'
 import { useAuth } from '../auth/AuthProvider'
 import { SurahSelector } from '../components/lobby/SurahSelector'
+import { JuzSelector } from '../components/lobby/JuzSelector'
 import { ParticipantCard } from '../components/lobby/ParticipantCard'
 import { InviteLink } from '../components/lobby/InviteLink'
 import { StartButton } from '../components/lobby/StartButton'
@@ -24,6 +25,11 @@ export function Lobby() {
 	async function selectSurah(surahId: number) {
 		if (!id) return
 		await supabase.from('rooms').update({ surah_id: surahId, juz_number: null }).eq('id', id)
+	}
+
+	async function selectJuz(juzNumber: number) {
+		if (!id) return
+		await supabase.from('rooms').update({ juz_number: juzNumber, surah_id: null }).eq('id', id)
 	}
 
 	async function startSession() {
@@ -55,8 +61,9 @@ export function Lobby() {
 			<InviteLink code={room.code} />
 
 			{isHost && (
-				<div className="w-full max-w-md">
+				<div className="w-full max-w-md flex flex-col gap-4">
 					<SurahSelector selected={room.surah_id} onSelect={selectSurah} />
+					<JuzSelector selected={room.juz_number} onSelect={selectJuz} />
 				</div>
 			)}
 
