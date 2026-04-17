@@ -34,17 +34,26 @@ export function JoinForm() {
 			return
 		}
 
-		const { count } = await supabase
+		const { data: existing } = await supabase
 			.from('participants')
-			.select('*', { count: 'exact', head: true })
+			.select('id')
 			.eq('room_id', room.id)
+			.eq('user_sub', user.sub)
+			.single()
 
-		await supabase.from('participants').insert({
-			room_id: room.id,
-			user_sub: user.sub,
-			display_name: user.displayName,
-			turn_order: count ?? 0,
-		})
+		if (!existing) {
+			const { count } = await supabase
+				.from('participants')
+				.select('*', { count: 'exact', head: true })
+				.eq('room_id', room.id)
+
+			await supabase.from('participants').insert({
+				room_id: room.id,
+				user_sub: user.sub,
+				display_name: user.displayName,
+				turn_order: count ?? 0,
+			})
+		}
 
 		navigate(`/room/${room.id}`)
 	}
