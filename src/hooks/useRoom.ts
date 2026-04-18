@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Room, Participant, TurnState } from '../types/room'
+
+const POLL_INTERVAL = 3000
 
 export function useRoom(roomId: string | undefined) {
 	const [room, setRoom] = useState<Room | null>(null)
@@ -8,25 +10,30 @@ export function useRoom(roomId: string | undefined) {
 	const [turnState, setTurnState] = useState<TurnState | null>(null)
 	const [loaded, setLoaded] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+	async function fetchAll() {
+		if (!roomId) return
+		const [roomRes, participantsRes, turnRes] = await Promise.all([
+			supabase.from('rooms').select('*').eq('id', roomId).maybeSingle(),
+			supabase.from('participants').select('*').eq('room_id', roomId).order('turn_order'),
+			supabase.from('turn_state').select('*').eq('room_id', roomId).maybeSingle(),
+		])
+		if (roomRes.error) setError(roomRes.error.message)
+		else setRoom(roomRes.data)
+		if (participantsRes.data) setParticipants(participantsRes.data)
+		if (turnRes.data) setTurnState(turnRes.data)
+	}
 
 	useEffect(() => {
 		if (!roomId) return
 
-		// Initial load
-		Promise.all([
-			supabase.from('rooms').select('*').eq('id', roomId).maybeSingle(),
-			supabase.from('participants').select('*').eq('room_id', roomId).order('turn_order'),
-			supabase.from('turn_state').select('*').eq('room_id', roomId).maybeSingle(),
-		]).then(([roomRes, participantsRes, turnRes]) => {
-			if (roomRes.error) setError(roomRes.error.message)
-			else setRoom(roomRes.data)
+		fetchAll().then(() => setLoaded(true))
 
-			if (participantsRes.data) setParticipants(participantsRes.data)
-			if (turnRes.data) setTurnState(turnRes.data)
-			setLoaded(true)
-		})
+		// Polling fallback — keeps state fresh if WebSocket is unavailable
+		pollRef.current = setInterval(fetchAll, POLL_INTERVAL)
 
-		// Realtime subscription on turn_state
+		// Realtime subscription (best-effort on top of polling)
 		const channel = supabase
 			.channel(`room:${roomId}`)
 			.on(
@@ -51,7 +58,10 @@ export function useRoom(roomId: string | undefined) {
 			)
 			.subscribe()
 
-		return () => { supabase.removeChannel(channel) }
+		return () => {
+			if (pollRef.current) clearInterval(pollRef.current)
+			supabase.removeChannel(channel)
+		}
 	}, [roomId])
 
 	return { room, participants, turnState, loaded, error }
