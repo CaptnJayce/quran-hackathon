@@ -1,9 +1,9 @@
-import type { AyahWithTranslation } from '../../types/quran'
+import type { AyahWithTranslation, Word } from '../../types/quran'
 
 interface Props {
 	ayah: AyahWithTranslation
 	readerName: string
-	onWordTap: (wordPosition: number) => void
+	onWordTap: (word: Word) => void
 }
 
 export function AyahDisplay({ ayah, readerName, onWordTap }: Props) {
@@ -22,7 +22,7 @@ export function AyahDisplay({ ayah, readerName, onWordTap }: Props) {
 					.map((word) => (
 						<span
 							key={word.id}
-							onClick={() => onWordTap(word.position)}
+							onClick={() => onWordTap(word)}
 							className="cursor-pointer hover:text-emerald-400 transition-colors px-1 rounded"
 							title={word.translation?.text}
 						>

@@ -20,7 +20,7 @@ export function Session() {
 	const { room, participants, turnState, loaded } = useRoom(id)
 	const { currentParticipant, advanceTurn, markAudioPlayed } = useTurn(id, participants, turnState)
 	const { ayahs, isLoading } = useAyah(room?.surah_id ?? null, room?.juz_number ?? null)
-	const { meaning, isLoading: lensLoading, fetchMeaning, clear } = useWordLens()
+	const { meaning, setMeaningFromWord, clear } = useWordLens()
 	const [showTranslation, setShowTranslation] = useState(false)
 
 	const currentAyahIndex = (turnState?.current_ayah ?? 1) - 1
@@ -78,10 +78,7 @@ export function Session() {
 				<AyahDisplay
 					ayah={currentAyah}
 					readerName={currentParticipant?.display_name ?? ''}
-					onWordTap={(wordPosition) => {
-						const [surahStr, ayahStr] = currentAyah.verse_key.split(':')
-						fetchMeaning(Number(surahStr), Number(ayahStr), wordPosition)
-					}}
+					onWordTap={(word) => setMeaningFromWord(word)}
 				/>
 
 				{showTranslation && (
@@ -110,7 +107,7 @@ export function Session() {
 			</div>
 
 			{meaning && (
-				<WordLens meaning={meaning} isLoading={lensLoading} onClose={clear} />
+				<WordLens meaning={meaning} isLoading={false} onClose={clear} />
 			)}
 		</div>
 	)
