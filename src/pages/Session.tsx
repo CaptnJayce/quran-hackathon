@@ -68,7 +68,8 @@ export function Session() {
 					</button>
 					<AudioControls
 						surahId={room?.surah_id ?? null}
-						onEnded={markAudioPlayed}
+						audioPlayed={turnState?.audio_played ?? false}
+						onPlay={markAudioPlayed}
 					/>
 				</div>
 

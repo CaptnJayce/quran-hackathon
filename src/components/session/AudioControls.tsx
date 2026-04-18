@@ -1,18 +1,30 @@
+import { useEffect } from 'react'
 import { useAudio } from '../../hooks/useAudio'
 
 interface Props {
 	surahId: number | null
-	onEnded?: () => void
+	audioPlayed: boolean
+	onPlay: () => void
 }
 
-export function AudioControls({ surahId, onEnded }: Props) {
-	const { isPlaying, play, stop } = useAudio(surahId, false, onEnded)
+export function AudioControls({ surahId, audioPlayed, onPlay }: Props) {
+	const { isPlaying, play, stop } = useAudio(surahId, false)
+
+	useEffect(() => {
+		if (audioPlayed && !isPlaying) play()
+		if (!audioPlayed && isPlaying) stop()
+	}, [audioPlayed])
+
+	function handlePlay() {
+		play()
+		onPlay()
+	}
 
 	if (!surahId) return null
 
 	return (
 		<button
-			onClick={isPlaying ? stop : play}
+			onClick={isPlaying ? stop : handlePlay}
 			className="flex items-center gap-2 text-sm text-stone-400 hover:text-stone-200 transition-colors"
 		>
 			{isPlaying ? (
