@@ -1,36 +1,31 @@
-import { useState, useEffect } from 'react'
-import { getAudioForChapter } from '../lib/quranApi'
-import { playAudio, stopAudio } from '../lib/audioPlayer'
+import { useState, useEffect, useRef } from 'react'
+import { stopAudio } from '../lib/audioPlayer'
 
-export function useAudio(surahId: number | null, autoPlay: boolean, onEnded?: () => void) {
-	const [audioUrl, setAudioUrl] = useState<string | null>(null)
+export function useAudio(url: string | null) {
 	const [isPlaying, setIsPlaying] = useState(false)
+	const audioRef = useRef<HTMLAudioElement | null>(null)
 
 	useEffect(() => {
-		if (!surahId) return
-		getAudioForChapter(surahId)
-			.then((file) => setAudioUrl(file.url))
-			.catch(console.error)
-		return () => stopAudio()
-	}, [surahId])
+		return () => { stopAudio() }
+	}, [url])
 
 	function play() {
-		if (!audioUrl) return
-		setIsPlaying(true)
-		playAudio(audioUrl, () => {
-			setIsPlaying(false)
-			onEnded?.()
-		})
+		if (!url) return
+		if (audioRef.current) {
+			audioRef.current.pause()
+		}
+		const audio = new Audio(url)
+		audio.crossOrigin = 'anonymous'
+		audioRef.current = audio
+		audio.onended = () => setIsPlaying(false)
+		audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false))
 	}
 
 	function stop() {
-		stopAudio()
+		audioRef.current?.pause()
+		audioRef.current = null
 		setIsPlaying(false)
 	}
 
-	useEffect(() => {
-		if (autoPlay && audioUrl) play()
-	}, [autoPlay, audioUrl])
-
-	return { isPlaying, play, stop, audioUrl }
+	return { isPlaying, play, stop }
 }

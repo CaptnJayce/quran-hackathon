@@ -95,8 +95,7 @@ export function Session() {
 						{showTranslation ? 'Hide' : 'Show'} Translation
 					</button>
 					<AudioControls
-						surahId={room?.surah_id ?? null}
-						audioPlayed={turnState?.audio_played ?? false}
+						verseKey={currentAyah.verse_key}
 						onPlay={markAudioPlayed}
 					/>
 				</div>

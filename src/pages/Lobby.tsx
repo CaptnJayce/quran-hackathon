@@ -68,6 +68,7 @@ export function Lobby() {
 		})
 
 		await supabase.from('rooms').update({ status: 'active' }).eq('id', id)
+		navigate(`/session/${id}`)
 	}
 
 	if (error) return <div className="p-8 text-red-400">Error: {error}</div>

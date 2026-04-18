@@ -1,27 +1,21 @@
-import { useEffect } from 'react'
 import { useAudio } from '../../hooks/useAudio'
+import { getAudioUrlForAyah } from '../../lib/quranApi'
 
 interface Props {
-	surahId: number | null
-	audioPlayed: boolean
-	onPlay: () => void
+	verseKey: string | null
+	onPlay?: () => void
 }
 
-export function AudioControls({ surahId, audioPlayed, onPlay }: Props) {
-	const { isPlaying, play, stop, audioUrl } = useAudio(surahId, false)
-
-	useEffect(() => {
-		if (audioPlayed && !isPlaying && audioUrl) play()
-		if (!audioPlayed && isPlaying) stop()
-	}, [audioPlayed, audioUrl])
+export function AudioControls({ verseKey, onPlay }: Props) {
+	const url = verseKey ? getAudioUrlForAyah(verseKey) : null
+	const { isPlaying, play, stop } = useAudio(url)
 
 	function handlePlay() {
-		if (!audioUrl) return
 		play()
-		onPlay()
+		onPlay?.()
 	}
 
-	if (!surahId) return null
+	if (!verseKey) return null
 
 	return (
 		<button

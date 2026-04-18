@@ -33,7 +33,9 @@ export async function getAyahsByJuz(juzNumber: number): Promise<AyahWithTranslat
 	return data.verses
 }
 
-export async function getAudioForChapter(surahId: number): Promise<AudioFile> {
-	const chapter = String(surahId).padStart(3, '0')
-	return { url: `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${chapter}.mp3`, duration: 0 }
+export function getAudioUrlForAyah(verseKey: string): string {
+	const [surah, ayah] = verseKey.split(':')
+	const s = String(surah).padStart(3, '0')
+	const a = String(ayah).padStart(3, '0')
+	return `https://everyayah.com/data/Alafasy_128kbps/${s}${a}.mp3`
 }
