@@ -14,9 +14,9 @@ export function useRoom(roomId: string | undefined) {
 
 		// Initial load
 		Promise.all([
-			supabase.from('rooms').select('*').eq('id', roomId).single(),
+			supabase.from('rooms').select('*').eq('id', roomId).maybeSingle(),
 			supabase.from('participants').select('*').eq('room_id', roomId).order('turn_order'),
-			supabase.from('turn_state').select('*').eq('room_id', roomId).single(),
+			supabase.from('turn_state').select('*').eq('room_id', roomId).maybeSingle(),
 		]).then(([roomRes, participantsRes, turnRes]) => {
 			if (roomRes.error) setError(roomRes.error.message)
 			else setRoom(roomRes.data)
