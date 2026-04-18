@@ -6,6 +6,7 @@ export function useRoom(roomId: string | undefined) {
 	const [room, setRoom] = useState<Room | null>(null)
 	const [participants, setParticipants] = useState<Participant[]>([])
 	const [turnState, setTurnState] = useState<TurnState | null>(null)
+	const [loaded, setLoaded] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -22,6 +23,7 @@ export function useRoom(roomId: string | undefined) {
 
 			if (participantsRes.data) setParticipants(participantsRes.data)
 			if (turnRes.data) setTurnState(turnRes.data)
+			setLoaded(true)
 		})
 
 		// Realtime subscription on turn_state
@@ -47,5 +49,5 @@ export function useRoom(roomId: string | undefined) {
 		return () => { supabase.removeChannel(channel) }
 	}, [roomId])
 
-	return { room, participants, turnState, error }
+	return { room, participants, turnState, loaded, error }
 }

@@ -17,7 +17,7 @@ export function Session() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 	const { user } = useAuth()
-	const { room, participants, turnState } = useRoom(id)
+	const { room, participants, turnState, loaded } = useRoom(id)
 	const { currentParticipant, advanceTurn, markAudioPlayed } = useTurn(id, participants, turnState)
 	const { ayahs, isLoading } = useAyah(room?.surah_id ?? null, room?.juz_number ?? null)
 	const { meaning, isLoading: lensLoading, fetchMeaning, clear } = useWordLens()
@@ -32,6 +32,12 @@ export function Session() {
 			navigate(`/summary/${id}`)
 		}
 	}, [room?.status, id, navigate])
+
+	useEffect(() => {
+		if (!loaded || !user) return
+		const isParticipant = participants.some((p) => p.user_sub === user.sub)
+		if (!isParticipant) navigate('/')
+	}, [loaded, user?.sub, participants.length, navigate])
 
 	if (isLoading || !currentAyah) {
 		return <div className="min-h-screen bg-stone-950 text-stone-400 flex items-center justify-center">Loading...</div>
