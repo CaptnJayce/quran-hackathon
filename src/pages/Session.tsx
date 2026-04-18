@@ -46,7 +46,11 @@ export function Session() {
 		}
 	}, [loaded, currentParticipant?.id, participants.length])
 
-	if (!loaded || isLoading || (!currentAyah && (room?.surah_id || room?.juz_number))) {
+	const roomLoaded = loaded && room !== null
+	const selectionMade = !!(room?.surah_id || room?.juz_number)
+	const ayahsReady = !isLoading && ayahs.length > 0
+
+	if (!roomLoaded || (selectionMade && !ayahsReady)) {
 		return <div className="min-h-screen bg-stone-950 text-stone-400 flex items-center justify-center">Loading...</div>
 	}
 
