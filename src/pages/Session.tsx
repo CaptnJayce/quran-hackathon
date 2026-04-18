@@ -39,6 +39,13 @@ export function Session() {
 		if (!isParticipant) navigate('/')
 	}, [loaded, user?.sub, participants.length, navigate])
 
+	useEffect(() => {
+		if (!loaded || !turnState) return
+		if (!currentParticipant && participants.length > 0) {
+			advanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
+		}
+	}, [loaded, currentParticipant?.id, participants.length])
+
 	if (isLoading) {
 		return <div className="min-h-screen bg-stone-950 text-stone-400 flex items-center justify-center">Loading...</div>
 	}

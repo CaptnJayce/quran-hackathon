@@ -44,6 +44,11 @@ export function useRoom(roomId: string | undefined) {
 				{ event: 'INSERT', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` },
 				(payload) => setParticipants((prev) => [...prev, payload.new as Participant].sort((a, b) => a.turn_order - b.turn_order))
 			)
+			.on(
+				'postgres_changes',
+				{ event: 'DELETE', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` },
+				(payload) => setParticipants((prev) => prev.filter((p) => p.id !== (payload.old as Participant).id))
+			)
 			.subscribe()
 
 		return () => { supabase.removeChannel(channel) }
