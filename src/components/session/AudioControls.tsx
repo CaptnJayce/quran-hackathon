@@ -8,14 +8,15 @@ interface Props {
 }
 
 export function AudioControls({ surahId, audioPlayed, onPlay }: Props) {
-	const { isPlaying, play, stop } = useAudio(surahId, false)
+	const { isPlaying, play, stop, audioUrl } = useAudio(surahId, false)
 
 	useEffect(() => {
-		if (audioPlayed && !isPlaying) play()
+		if (audioPlayed && !isPlaying && audioUrl) play()
 		if (!audioPlayed && isPlaying) stop()
-	}, [audioPlayed])
+	}, [audioPlayed, audioUrl])
 
 	function handlePlay() {
+		if (!audioUrl) return
 		play()
 		onPlay()
 	}

@@ -84,8 +84,8 @@ export function Session() {
 					}}
 				/>
 
-				{showTranslation && currentAyah.translations[0] && (
-					<TranslationPanel text={currentAyah.translations[0].text} />
+				{showTranslation && (
+					<TranslationPanel text={currentAyah.translations?.[0]?.text ?? 'Translation not available.'} />
 				)}
 			</div>
 
