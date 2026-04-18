@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Room, Participant, TurnState } from '../types/room'
 
@@ -11,24 +11,37 @@ export function useRoom(roomId: string | undefined) {
 	const [loaded, setLoaded] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+	const cache = useRef<{ room: string; turn: string; participants: string }>({ room: '', turn: '', participants: '' })
 
-	async function fetchAll() {
+	const fetchAll = useCallback(async () => {
 		if (!roomId) return
 		const [roomRes, participantsRes, turnRes] = await Promise.all([
 			supabase.from('rooms').select('*').eq('id', roomId).maybeSingle(),
 			supabase.from('participants').select('*').eq('room_id', roomId).order('turn_order'),
 			supabase.from('turn_state').select('*').eq('room_id', roomId).maybeSingle(),
 		])
-		if (roomRes.error) setError(roomRes.error.message)
-		else setRoom(roomRes.data)
-		if (participantsRes.data) setParticipants(participantsRes.data)
-		if (turnRes.data) setTurnState(turnRes.data)
-	}
+
+		if (roomRes.error) { setError(roomRes.error.message) } else if (roomRes.data) {
+			const key = `${roomRes.data.status}|${roomRes.data.surah_id}|${roomRes.data.juz_number}`
+			if (key !== cache.current.room) { cache.current.room = key; setRoom(roomRes.data) }
+		}
+
+		if (participantsRes.data) {
+			const key = participantsRes.data.map(p => `${p.id}:${p.ayahs_read}`).join(',')
+			if (key !== cache.current.participants) { cache.current.participants = key; setParticipants(participantsRes.data) }
+		}
+
+		if (turnRes.data) {
+			const key = `${turnRes.data.current_ayah}|${turnRes.data.current_turn}|${turnRes.data.audio_played}`
+			if (key !== cache.current.turn) { cache.current.turn = key; setTurnState(turnRes.data) }
+		}
+	}, [roomId])
 
 	useEffect(() => {
 		if (!roomId) return
 
 		fetchAll().then(() => setLoaded(true))
+
 
 		// Polling fallback — keeps state fresh if WebSocket is unavailable
 		pollRef.current = setInterval(fetchAll, POLL_INTERVAL)
