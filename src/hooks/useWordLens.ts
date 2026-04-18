@@ -5,10 +5,13 @@ export function useWordLens() {
 	const [meaning, setMeaning] = useState<WordMeaning | null>(null)
 
 	function setMeaningFromWord(word: Word) {
+		const translation = word.translation?.text
+		const transliteration = word.transliteration?.text
+		if (!translation && !transliteration) return
 		setMeaning({
 			arabic: word.text_uthmani,
-			transliteration: word.transliteration?.text ?? '',
-			translation: word.translation?.text ?? '',
+			transliteration: transliteration ?? '',
+			translation: translation ?? '',
 			rootWord: word.char_type_name ?? '',
 		})
 	}

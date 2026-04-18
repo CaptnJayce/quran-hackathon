@@ -5,7 +5,9 @@ export function playAudio(url: string, onEnded?: () => void): HTMLAudioElement {
 		audio.pause()
 		audio.src = ''
 	}
-	audio = new Audio(url)
+	audio = new Audio()
+	audio.crossOrigin = 'anonymous'
+	audio.src = url
 	if (onEnded) audio.addEventListener('ended', onEnded, { once: true })
 	audio.play().catch(console.error)
 	return audio
