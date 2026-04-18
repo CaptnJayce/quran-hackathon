@@ -15,7 +15,7 @@ export function AyahDisplay({ ayah, readerName, onWordTap }: Props) {
 				className="text-right leading-loose text-3xl"
 				dir="rtl"
 				lang="ar"
-				style={{ fontFamily: 'KFGQPC, serif' }}
+				style={{ fontFamily: "'Amiri Quran', serif" }}
 			>
 				{ayah.words
 					.filter((w) => w.char_type_name !== 'end')

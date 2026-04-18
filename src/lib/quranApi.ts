@@ -33,9 +33,7 @@ export async function getAyahsByJuz(juzNumber: number): Promise<AyahWithTranslat
 	return data.verses
 }
 
-export async function getAudioForChapter(surahId: number, reciterId = 7): Promise<AudioFile> {
-	const res = await fetch(`https://api.quran.foundation/api/v4/chapter_recitations/${reciterId}/${surahId}`)
-	if (!res.ok) throw new Error(`Audio API error: ${res.status}`)
-	const data: { audio_file: AudioFile } = await res.json()
-	return data.audio_file
+export async function getAudioForChapter(surahId: number): Promise<AudioFile> {
+	const chapter = String(surahId).padStart(3, '0')
+	return { url: `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${chapter}.mp3`, duration: 0 }
 }
