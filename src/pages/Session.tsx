@@ -39,8 +39,22 @@ export function Session() {
 		if (!isParticipant) navigate('/')
 	}, [loaded, user?.sub, participants.length, navigate])
 
-	if (isLoading || !currentAyah) {
+	if (isLoading) {
 		return <div className="min-h-screen bg-stone-950 text-stone-400 flex items-center justify-center">Loading...</div>
+	}
+
+	if (!currentAyah) {
+		return (
+			<div className="min-h-screen bg-stone-950 text-stone-400 flex flex-col items-center justify-center gap-4 px-4 text-center">
+				<p className="text-lg">No reading was selected for this session.</p>
+				<button
+					onClick={() => navigate('/')}
+					className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-sm transition-colors"
+				>
+					Return home
+				</button>
+			</div>
+		)
 	}
 
 	return (
