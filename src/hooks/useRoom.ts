@@ -1,30 +1,52 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Room, Participant, TurnState } from '../types/room'
+
+const POLL_INTERVAL = 3000
 
 export function useRoom(roomId: string | undefined) {
 	const [room, setRoom] = useState<Room | null>(null)
 	const [participants, setParticipants] = useState<Participant[]>([])
 	const [turnState, setTurnState] = useState<TurnState | null>(null)
+	const [loaded, setLoaded] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+	const cache = useRef<{ room: string; turn: string; participants: string }>({ room: '', turn: '', participants: '' })
+
+	const fetchAll = useCallback(async () => {
+		if (!roomId) return
+		const [roomRes, participantsRes, turnRes] = await Promise.all([
+			supabase.from('rooms').select('*').eq('id', roomId).maybeSingle(),
+			supabase.from('participants').select('*').eq('room_id', roomId).order('turn_order'),
+			supabase.from('turn_state').select('*').eq('room_id', roomId).maybeSingle(),
+		])
+
+		if (roomRes.error) { setError(roomRes.error.message) } else if (roomRes.data) {
+			const key = `${roomRes.data.status}|${roomRes.data.surah_id}|${roomRes.data.juz_number}`
+			if (key !== cache.current.room) { cache.current.room = key; setRoom(roomRes.data) }
+		}
+
+		if (participantsRes.data) {
+			const key = participantsRes.data.map(p => `${p.id}:${p.ayahs_read}`).join(',')
+			if (key !== cache.current.participants) { cache.current.participants = key; setParticipants(participantsRes.data) }
+		}
+
+		if (turnRes.data) {
+			const key = `${turnRes.data.current_ayah}|${turnRes.data.current_turn}|${turnRes.data.audio_played}`
+			if (key !== cache.current.turn) { cache.current.turn = key; setTurnState(turnRes.data) }
+		}
+	}, [roomId])
 
 	useEffect(() => {
 		if (!roomId) return
 
-		// Initial load
-		Promise.all([
-			supabase.from('rooms').select('*').eq('id', roomId).single(),
-			supabase.from('participants').select('*').eq('room_id', roomId).order('turn_order'),
-			supabase.from('turn_state').select('*').eq('room_id', roomId).single(),
-		]).then(([roomRes, participantsRes, turnRes]) => {
-			if (roomRes.error) setError(roomRes.error.message)
-			else setRoom(roomRes.data)
+		fetchAll().then(() => setLoaded(true))
 
-			if (participantsRes.data) setParticipants(participantsRes.data)
-			if (turnRes.data) setTurnState(turnRes.data)
-		})
 
-		// Realtime subscription on turn_state
+		// Polling fallback — keeps state fresh if WebSocket is unavailable
+		pollRef.current = setInterval(fetchAll, POLL_INTERVAL)
+
+		// Realtime subscription (best-effort on top of polling)
 		const channel = supabase
 			.channel(`room:${roomId}`)
 			.on(
@@ -42,10 +64,18 @@ export function useRoom(roomId: string | undefined) {
 				{ event: 'INSERT', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` },
 				(payload) => setParticipants((prev) => [...prev, payload.new as Participant].sort((a, b) => a.turn_order - b.turn_order))
 			)
+			.on(
+				'postgres_changes',
+				{ event: 'DELETE', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` },
+				(payload) => setParticipants((prev) => prev.filter((p) => p.id !== (payload.old as Participant).id))
+			)
 			.subscribe()
 
-		return () => { supabase.removeChannel(channel) }
+		return () => {
+			if (pollRef.current) clearInterval(pollRef.current)
+			supabase.removeChannel(channel)
+		}
 	}, [roomId])
 
-	return { room, participants, turnState, error }
+	return { room, participants, turnState, loaded, error }
 }

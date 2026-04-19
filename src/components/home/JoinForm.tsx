@@ -1,15 +1,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../auth/AuthProvider'
 
 export function JoinForm() {
 	const [code, setCode] = useState('')
 	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
+	const { user } = useAuth()
 
 	async function handleJoin(e: React.FormEvent) {
 		e.preventDefault()
 		setError(null)
+
+		if (!user) {
+			setError('You must be signed in to join a circle.')
+			return
+		}
 
 		const { data: room } = await supabase
 			.from('rooms')
@@ -25,6 +32,27 @@ export function JoinForm() {
 		if (room.status === 'complete') {
 			setError('That session has already ended.')
 			return
+		}
+
+		const { data: existing } = await supabase
+			.from('participants')
+			.select('id')
+			.eq('room_id', room.id)
+			.eq('user_sub', user.sub)
+			.single()
+
+		if (!existing) {
+			const { count } = await supabase
+				.from('participants')
+				.select('*', { count: 'exact', head: true })
+				.eq('room_id', room.id)
+
+			await supabase.from('participants').insert({
+				room_id: room.id,
+				user_sub: user.sub,
+				display_name: user.displayName,
+				turn_order: count ?? 0,
+			})
 		}
 
 		navigate(`/room/${room.id}`)

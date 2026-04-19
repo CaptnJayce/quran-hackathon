@@ -17,10 +17,10 @@ export function Session() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 	const { user } = useAuth()
-	const { room, participants, turnState } = useRoom(id)
+	const { room, participants, turnState, loaded } = useRoom(id)
 	const { currentParticipant, advanceTurn, markAudioPlayed } = useTurn(id, participants, turnState)
 	const { ayahs, isLoading } = useAyah(room?.surah_id ?? null, room?.juz_number ?? null)
-	const { meaning, isLoading: lensLoading, fetchMeaning, clear } = useWordLens()
+	const { meaning, setMeaningFromWord, clear } = useWordLens()
 	const [showTranslation, setShowTranslation] = useState(false)
 
 	const currentAyahIndex = (turnState?.current_ayah ?? 1) - 1
@@ -33,8 +33,39 @@ export function Session() {
 		}
 	}, [room?.status, id, navigate])
 
-	if (isLoading || !currentAyah) {
+	useEffect(() => {
+		if (!loaded || !user) return
+		const isParticipant = participants.some((p) => p.user_sub === user.sub)
+		if (!isParticipant) navigate('/')
+	}, [loaded, user?.sub, participants.length, navigate])
+
+	useEffect(() => {
+		if (!loaded || !turnState) return
+		if (!currentParticipant && participants.length > 0) {
+			advanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
+		}
+	}, [loaded, currentParticipant?.id, participants.length])
+
+	const roomLoaded = loaded && room !== null
+	const selectionMade = !!(room?.surah_id || room?.juz_number)
+	const ayahsReady = !isLoading && ayahs.length > 0
+
+	if (!roomLoaded || (selectionMade && !ayahsReady)) {
 		return <div className="min-h-screen bg-stone-950 text-stone-400 flex items-center justify-center">Loading...</div>
+	}
+
+	if (!currentAyah) {
+		return (
+			<div className="min-h-screen bg-stone-950 text-stone-400 flex flex-col items-center justify-center gap-4 px-4 text-center">
+				<p className="text-lg">No reading was selected for this session.</p>
+				<button
+					onClick={() => navigate('/')}
+					className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-sm transition-colors"
+				>
+					Return home
+				</button>
+			</div>
+		)
 	}
 
 	return (
@@ -47,14 +78,11 @@ export function Session() {
 				<AyahDisplay
 					ayah={currentAyah}
 					readerName={currentParticipant?.display_name ?? ''}
-					onWordTap={(wordPosition) => {
-						const [surahStr, ayahStr] = currentAyah.verse_key.split(':')
-						fetchMeaning(Number(surahStr), Number(ayahStr), wordPosition)
-					}}
+					onWordTap={(word) => setMeaningFromWord(word)}
 				/>
 
-				{showTranslation && currentAyah.translations[0] && (
-					<TranslationPanel text={currentAyah.translations[0].text} />
+				{showTranslation && (
+					<TranslationPanel text={currentAyah.translations?.[0]?.text ?? 'Translation not available.'} />
 				)}
 			</div>
 
@@ -67,8 +95,8 @@ export function Session() {
 						{showTranslation ? 'Hide' : 'Show'} Translation
 					</button>
 					<AudioControls
-						surahId={room?.surah_id ?? null}
-						onEnded={markAudioPlayed}
+						verseKey={currentAyah.verse_key}
+						onPlay={markAudioPlayed}
 					/>
 				</div>
 
@@ -78,7 +106,7 @@ export function Session() {
 			</div>
 
 			{meaning && (
-				<WordLens meaning={meaning} isLoading={lensLoading} onClose={clear} />
+				<WordLens meaning={meaning} isLoading={false} onClose={clear} />
 			)}
 		</div>
 	)

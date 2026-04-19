@@ -1,11 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap');
 @import "tailwindcss";
-
-/* Arabic Quran font — download KFGQPC Uthmanic Script HAFS and place in public/fonts/ */
-@font-face {
-	font-family: 'KFGQPC';
-	src: url('/fonts/KFGQPCUthmanicScriptHAFS.woff2') format('woff2');
-	font-display: swap;
-}
 
 * {
 	box-sizing: border-box;

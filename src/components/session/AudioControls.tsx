@@ -1,18 +1,25 @@
 import { useAudio } from '../../hooks/useAudio'
+import { getAudioUrlForAyah } from '../../lib/quranApi'
 
 interface Props {
-	surahId: number | null
-	onEnded?: () => void
+	verseKey: string | null
+	onPlay?: () => void
 }
 
-export function AudioControls({ surahId, onEnded }: Props) {
-	const { isPlaying, play, stop } = useAudio(surahId, false, onEnded)
+export function AudioControls({ verseKey, onPlay }: Props) {
+	const url = verseKey ? getAudioUrlForAyah(verseKey) : null
+	const { isPlaying, play, stop } = useAudio(url)
 
-	if (!surahId) return null
+	function handlePlay() {
+		play()
+		onPlay?.()
+	}
+
+	if (!verseKey) return null
 
 	return (
 		<button
-			onClick={isPlaying ? stop : play}
+			onClick={isPlaying ? stop : handlePlay}
 			className="flex items-center gap-2 text-sm text-stone-400 hover:text-stone-200 transition-colors"
 		>
 			{isPlaying ? (
