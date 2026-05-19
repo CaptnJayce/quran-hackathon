@@ -65,7 +65,6 @@ export function Home() {
 			) : (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<LoginButton />
-					<JoinForm initialCode={prefilledCode} />
 				</div>
 			)}
 
