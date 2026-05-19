@@ -62,7 +62,11 @@ export function useRoom(roomId: string | undefined) {
 			.on(
 				'postgres_changes',
 				{ event: 'INSERT', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` },
-				(payload) => setParticipants((prev) => [...prev, payload.new as Participant].sort((a, b) => a.turn_order - b.turn_order))
+				(payload) => setParticipants((prev) => {
+					const incoming = payload.new as Participant
+					if (prev.some((p) => p.id === incoming.id)) return prev
+					return [...prev, incoming].sort((a, b) => a.turn_order - b.turn_order)
+				})
 			)
 			.on(
 				'postgres_changes',

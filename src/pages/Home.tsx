@@ -2,14 +2,16 @@ import { HeroSection } from '../components/home/HeroSection'
 import { LoginButton } from '../components/home/LoginButton'
 import { JoinForm } from '../components/home/JoinForm'
 import { useAuth } from '../auth/AuthProvider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useState } from 'react'
 
 export function Home() {
 	const { user, devLogin } = useAuth()
 	const navigate = useNavigate()
+	const [searchParams] = useSearchParams()
 	const [devName, setDevName] = useState('')
+	const prefilledCode = searchParams.get('join') ?? ''
 
 	async function createRoom() {
 		if (!user) return
@@ -64,12 +66,12 @@ export function Home() {
 					>
 						Create a Circle
 					</button>
-					<JoinForm />
+					<JoinForm initialCode={prefilledCode} />
 				</div>
 			) : (
 				<div className="flex flex-col gap-4 w-full max-w-sm mt-8">
 					<LoginButton />
-					<JoinForm />
+					<JoinForm initialCode={prefilledCode} />
 				</div>
 			)}
 		</div>

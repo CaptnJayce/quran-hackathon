@@ -1,4 +1,4 @@
-import type { Surah, AyahWithTranslation, AudioFile } from '../types/quran'
+import type { Surah, AyahWithTranslation } from '../types/quran'
 
 const BASE = 'https://api.qurancdn.com/api/qdc'
 const TRANSLATION_ID = 131 // Saheeh International
