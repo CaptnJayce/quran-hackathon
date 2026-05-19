@@ -149,7 +149,10 @@ export function Session() {
 				/>
 
 				{showTranslation && (
-					<TranslationPanel text={currentAyah.translations?.[0]?.text ?? 'Translation not available.'} />
+					<TranslationPanel
+						verseKey={currentAyah.verse_key}
+						initialText={currentAyah.translations?.[0]?.text ?? 'Translation not available.'}
+					/>
 				)}
 			</div>
 

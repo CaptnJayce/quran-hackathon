@@ -9,6 +9,38 @@ async function get<T>(path: string): Promise<T> {
 	return res.json()
 }
 
+interface CloudAyah {
+	number: number
+	text: string
+	surah: { number: number }
+	numberInSurah: number
+}
+
+async function fetchTranslationMap(surahId?: number, juzNumber?: number): Promise<Map<string, string>> {
+	const edition = 'en.sahih'
+	const path = surahId
+		? `https://api.alquran.cloud/v1/surah/${surahId}/${edition}`
+		: `https://api.alquran.cloud/v1/juz/${juzNumber}/${edition}`
+	const res = await fetch(path)
+	if (!res.ok) return new Map()
+	const data = await res.json()
+	const ayahs: CloudAyah[] = data?.data?.ayahs ?? []
+	const map = new Map<string, string>()
+	for (const a of ayahs) {
+		map.set(`${a.surah.number}:${a.numberInSurah}`, a.text)
+	}
+	return map
+}
+
+function mergeTranslations(verses: AyahWithTranslation[], translationMap: Map<string, string>): AyahWithTranslation[] {
+	return verses.map((v) => ({
+		...v,
+		translations: translationMap.has(v.verse_key)
+			? [{ resource_id: TRANSLATION_ID, text: translationMap.get(v.verse_key)! }]
+			: [],
+	}))
+}
+
 export async function getSurahs(): Promise<Surah[]> {
 	const data = await get<{ chapters: Surah[] }>('/chapters?language=en')
 	return data.chapters
@@ -20,24 +52,49 @@ export async function getSurah(id: number): Promise<Surah> {
 }
 
 export async function getAyahsByChapter(surahId: number): Promise<AyahWithTranslation[]> {
-	const data = await get<{ verses: AyahWithTranslation[] }>(
-		`/verses/by_chapter/${surahId}?words=true&translations=${TRANSLATION_ID}&word_fields=text_uthmani,transliteration,translation,char_type_name&per_page=300`
-	)
-	return data.verses
+	const [verses, translationMap] = await Promise.all([
+		get<{ verses: AyahWithTranslation[] }>(
+			`/verses/by_chapter/${surahId}?words=true&translations=${TRANSLATION_ID}&word_fields=text_uthmani,transliteration,translation,char_type_name&per_page=300`
+		).then((d) => d.verses),
+		fetchTranslationMap(surahId),
+	])
+	return mergeTranslations(verses, translationMap)
 }
 
-export async function getAyahsByJuz(juzNumber: number): Promise<AyahWithTranslation[]> {
+async function getAyahsByJuzWords(juzNumber: number): Promise<AyahWithTranslation[]> {
 	const data = await get<{ verses: AyahWithTranslation[] }>(
 		`/verses/by_juz/${juzNumber}?words=true&translations=${TRANSLATION_ID}&word_fields=text_uthmani,transliteration,translation,char_type_name&per_page=500`
 	)
 	return data.verses
 }
 
+export async function getAyahsByJuz(juzNumber: number): Promise<AyahWithTranslation[]> {
+	const [verses, translationMap] = await Promise.all([
+		getAyahsByJuzWords(juzNumber),
+		fetchTranslationMap(undefined, juzNumber),
+	])
+	return mergeTranslations(verses, translationMap)
+}
+
 export async function getAllAyahs(): Promise<AyahWithTranslation[]> {
 	const results = await Promise.all(
-		Array.from({ length: 30 }, (_, i) => getAyahsByJuz(i + 1))
+		Array.from({ length: 30 }, (_, i) => getAyahsByJuzWords(i + 1))
 	)
 	return results.flat()
+}
+
+export async function getVerseTranslation(verseKey: string): Promise<string | null> {
+	const [surah] = verseKey.split(':')
+	const edition = 'en.sahih'
+	try {
+		const res = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${edition}`)
+		if (!res.ok) return null
+		const data = await res.json()
+		const ayahs: CloudAyah[] = data?.data?.ayahs ?? []
+		return ayahs.find((a) => `${a.surah.number}:${a.numberInSurah}` === verseKey)?.text ?? null
+	} catch {
+		return null
+	}
 }
 
 export function getAudioUrlForAyah(verseKey: string): string {
