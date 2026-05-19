@@ -152,6 +152,7 @@ export function Session() {
 					<TranslationPanel
 						verseKey={currentAyah.verse_key}
 						initialText={currentAyah.translations?.[0]?.text ?? 'Translation not available.'}
+						onClose={() => setShowTranslation(false)}
 					/>
 				)}
 			</div>
