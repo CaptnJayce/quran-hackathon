@@ -22,7 +22,7 @@ import { AhsantaButton } from '../components/session/AhsantaButton'
 export function Session() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
-	const { user } = useAuth()
+	const { user, isLoading: authLoading } = useAuth()
 	const { room, participants, turnState, loaded } = useRoom(id)
 	const { currentParticipant, advanceTurn: rawAdvanceTurn, skipVote, markAudioPlayed } = useTurn(id, participants, turnState)
 	const { addPoints } = usePoints(id)
@@ -89,7 +89,7 @@ export function Session() {
 	const selectionMade = !!(room?.surah_id || room?.juz_number)
 	const ayahsReady = !isLoading && ayahs.length > 0
 
-	if (!roomLoaded || (selectionMade && !ayahsReady)) {
+	if (!roomLoaded || authLoading || (selectionMade && !ayahsReady)) {
 		const loadingMsg = room?.juz_number === 31
 			? 'Loading Whole Quran — this may take a moment...'
 			: 'Loading...'
@@ -143,7 +143,7 @@ export function Session() {
 			</div>
 
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
-
+				<PointPopup items={popupItems} />
 				<AyahDisplay
 					ayah={currentAyah}
 					readerName={currentParticipant?.display_name ?? ''}
@@ -197,11 +197,6 @@ export function Session() {
 				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
 			)}
 
-			{popupItems.length > 0 && (
-				<div className="fixed inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
-					<PointPopup items={popupItems} />
-				</div>
-			)}
 		</div>
 	)
 }

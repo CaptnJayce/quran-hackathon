@@ -21,15 +21,19 @@ async function fetchTranslationMap(surahId?: number, juzNumber?: number): Promis
 	const path = surahId
 		? `https://api.alquran.cloud/v1/surah/${surahId}/${edition}`
 		: `https://api.alquran.cloud/v1/juz/${juzNumber}/${edition}`
-	const res = await fetch(path)
-	if (!res.ok) return new Map()
-	const data = await res.json()
-	const ayahs: CloudAyah[] = data?.data?.ayahs ?? []
-	const map = new Map<string, string>()
-	for (const a of ayahs) {
-		map.set(`${a.surah.number}:${a.numberInSurah}`, a.text)
+	try {
+		const res = await fetch(path)
+		if (!res.ok) return new Map()
+		const data = await res.json()
+		const ayahs: CloudAyah[] = data?.data?.ayahs ?? []
+		const map = new Map<string, string>()
+		for (const a of ayahs) {
+			map.set(`${a.surah.number}:${a.numberInSurah}`, a.text)
+		}
+		return map
+	} catch {
+		return new Map()
 	}
-	return map
 }
 
 function mergeTranslations(verses: AyahWithTranslation[], translationMap: Map<string, string>): AyahWithTranslation[] {

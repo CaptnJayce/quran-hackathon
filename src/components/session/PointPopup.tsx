@@ -48,8 +48,10 @@ export function PointPopup({ items }: { items: PopupItem[] }) {
 		return () => clearTimeout(removalTimer)
 	}, [items])
 
+	if (showing.length === 0) return null
+
 	return (
-		<>
+		<div className="pointer-events-none flex flex-col items-center w-full">
 			{showing.map((s) => (
 				<div
 					key={s.id}
@@ -65,6 +67,6 @@ export function PointPopup({ items }: { items: PopupItem[] }) {
 					{s.name} gets +{s.amount} {s.reason === 'read_ayah' ? 'point' : 'points'} for {LABELS[s.reason] ?? s.reason}
 				</div>
 			))}
-		</>
+		</div>
 	)
 }
