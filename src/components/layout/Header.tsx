@@ -5,7 +5,7 @@ export function Header() {
 
 	return (
 		<header className="flex items-center justify-between px-4 py-3 border-b border-stone-800">
-			<span className="font-bold text-emerald-400 text-lg tracking-tight">Halaq</span>
+			<span className="font-bold text-emerald-400 text-lg tracking-tight">Halaqah</span>
 			{user && (
 				<button
 					onClick={logout}
