@@ -37,14 +37,14 @@ export function Session() {
 		if (!loaded || !user) return
 		const isParticipant = participants.some((p) => p.user_sub === user.sub)
 		if (!isParticipant) navigate('/')
-	}, [loaded, user?.sub, participants.length, navigate])
+	}, [loaded, user, participants, navigate])
 
 	useEffect(() => {
 		if (!loaded || !turnState) return
 		if (!currentParticipant && participants.length > 0) {
 			advanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
 		}
-	}, [loaded, currentParticipant?.id, participants.length])
+	}, [loaded, currentParticipant, participants, turnState, advanceTurn, ayahs.length, id, navigate])
 
 	const roomLoaded = loaded && room !== null
 	const selectionMade = !!(room?.surah_id || room?.juz_number)

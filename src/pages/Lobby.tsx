@@ -20,8 +20,6 @@ export function Lobby() {
 	useEffect(() => {
 		if (room?.surah_id) {
 			getSurah(room.surah_id).then((s) => setSurahName(s.name_simple)).catch(() => setSurahName(`Surah ${room.surah_id}`))
-		} else {
-			setSurahName(null)
 		}
 	}, [room?.surah_id])
 

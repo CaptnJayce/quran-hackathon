@@ -15,7 +15,7 @@ export function Summary() {
 	useEffect(() => {
 		recordStreak()
 		fetchStreak()
-	}, [])
+	}, [recordStreak, fetchStreak])
 
 	if (!room) return <div className="min-h-screen bg-stone-950 text-stone-400 flex items-center justify-center">Loading...</div>
 

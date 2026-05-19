@@ -42,11 +42,14 @@ export function useRoom(roomId: string | undefined) {
 
 		fetchAll().then(() => setLoaded(true))
 
+		return () => {}
+	}, [roomId, fetchAll])
 
-		// Polling fallback — keeps state fresh if WebSocket is unavailable
+	useEffect(() => {
+		if (!roomId) return
+
 		pollRef.current = setInterval(fetchAll, POLL_INTERVAL)
 
-		// Realtime subscription (best-effort on top of polling)
 		const channel = supabase
 			.channel(`room:${roomId}`)
 			.on(
@@ -75,7 +78,7 @@ export function useRoom(roomId: string | undefined) {
 			if (pollRef.current) clearInterval(pollRef.current)
 			supabase.removeChannel(channel)
 		}
-	}, [roomId])
+	}, [roomId, fetchAll])
 
 	return { room, participants, turnState, loaded, error }
 }

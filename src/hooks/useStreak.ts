@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { authHeaders } from '../auth/tokenStore'
 
 const QF_API = 'https://api.quran.foundation/api/v4'
@@ -6,7 +6,7 @@ const QF_API = 'https://api.quran.foundation/api/v4'
 export function useStreak() {
 	const [streak, setStreak] = useState<number | null>(null)
 
-	async function fetchStreak() {
+	const fetchStreak = useCallback(async () => {
 		try {
 			const res = await fetch(`${QF_API}/auth/v1/streak`, {
 				headers: authHeaders(),
@@ -17,9 +17,9 @@ export function useStreak() {
 		} catch {
 			// streak is non-critical — fail silently
 		}
-	}
+	}, [])
 
-	async function recordStreak() {
+	const recordStreak = useCallback(async () => {
 		try {
 			await fetch(`${QF_API}/auth/v1/streak`, {
 				method: 'POST',
@@ -29,7 +29,7 @@ export function useStreak() {
 		} catch {
 			// non-critical
 		}
-	}
+	}, [fetchStreak])
 
 	return { streak, fetchStreak, recordStreak }
 }

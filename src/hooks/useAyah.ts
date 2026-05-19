@@ -12,11 +12,11 @@ export function useAyah(surahId: number | null, juzNumber: number | null) {
 		setIsLoading(true)
 		setError(null)
 
-		const fetch = surahId
+		const promise = surahId
 			? getAyahsByChapter(surahId)
 			: getAyahsByJuz(juzNumber!)
 
-		fetch
+		promise
 			.then(setAyahs)
 			.catch((e) => setError(e.message))
 			.finally(() => setIsLoading(false))
