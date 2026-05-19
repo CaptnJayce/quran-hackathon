@@ -65,13 +65,13 @@ export function JoinForm() {
 				onChange={(e) => setCode(e.target.value)}
 				placeholder="Enter room code (e.g. BQRS71)"
 				maxLength={6}
-				className="w-full px-4 py-3 bg-white/70 border border-amber-200/80 rounded-xl text-center text-lg font-mono tracking-widest uppercase placeholder:normal-case placeholder:tracking-normal placeholder:font-sans focus:outline-none focus:border-emerald-600"
+				className="w-full px-4 py-3 bg-surface border border-border rounded-xl text-center text-lg font-mono tracking-widest uppercase placeholder:normal-case placeholder:tracking-normal placeholder:font-sans focus:outline-none focus:border-accent"
 			/>
 			{error && <p className="text-red-500 text-sm text-center">{error}</p>}
 			<button
 				type="submit"
 				disabled={code.length < 6}
-				className="w-full py-3 bg-amber-200 hover:bg-amber-300 disabled:opacity-40 rounded-xl font-semibold transition-colors text-stone-700"
+				className="w-full py-3 bg-surface-raised hover:brightness-110 disabled:opacity-40 rounded-xl font-semibold transition-colors text-ink"
 			>
 				Join Circle
 			</button>
