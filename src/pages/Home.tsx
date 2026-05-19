@@ -39,13 +39,13 @@ export function Home() {
 	}
 
 	if (isLoading) return (
-		<div className="min-h-screen bg-stone-950 flex items-center justify-center">
-			<div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+		<div className="min-h-screen flex items-center justify-center">
+			<div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
 		</div>
 	)
 
 	return (
-		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-between px-4 py-10 gap-6">
+		<div className="min-h-screen text-ink flex flex-col items-center justify-between px-4 py-10 gap-6">
 			<div className="flex flex-col items-center gap-6 w-full">
 				<HeroSection />
 				<FeatureHighlights />
@@ -53,10 +53,10 @@ export function Home() {
 
 			{user ? (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
-					<p className="text-center text-stone-400 text-sm">Salaam, {user.displayName}</p>
+					<p className="text-center text-ink-muted text-sm">Salaam, {user.displayName}</p>
 					<button
 						onClick={createRoom}
-						className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors"
+						className="w-full py-3 bg-accent hover:brightness-110 rounded-xl font-semibold transition-colors text-white"
 					>
 						Create a Circle
 					</button>

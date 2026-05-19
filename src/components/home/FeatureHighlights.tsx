@@ -34,11 +34,11 @@ export function FeatureHighlights() {
 	return (
 		<div className="w-full max-w-sm flex flex-col gap-3">
 			{features.map((f) => (
-				<div key={f.title} className="flex items-start gap-3 bg-stone-900 border border-stone-800 rounded-xl px-4 py-3">
-					<div className="text-emerald-500 mt-0.5 shrink-0">{f.icon}</div>
+				<div key={f.title} className="flex items-start gap-3 bg-surface border border-border rounded-xl px-4 py-3">
+					<div className="text-accent mt-0.5 shrink-0">{f.icon}</div>
 					<div>
-						<p className="text-stone-200 text-sm font-medium">{f.title}</p>
-						<p className="text-stone-500 text-xs leading-relaxed mt-0.5">{f.description}</p>
+						<p className="text-ink text-sm font-medium">{f.title}</p>
+						<p className="text-ink-faint text-xs leading-relaxed mt-0.5">{f.description}</p>
 					</div>
 				</div>
 			))}

@@ -17,12 +17,12 @@ export function TurnIndicator({ participants, currentTurnId }: Props) {
 					>
 						<div
 							className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 ${
-								isActive ? 'border-emerald-400 bg-emerald-900' : 'border-stone-600 bg-stone-800'
+								isActive ? 'border-accent bg-accent-bg text-ink' : 'border-border bg-surface text-ink-secondary'
 							}`}
 						>
 							{p.display_name.charAt(0).toUpperCase()}
 						</div>
-						<span className="text-xs text-stone-400 max-w-[4rem] truncate">{p.display_name}</span>
+						<span className="text-xs text-ink-muted max-w-[4rem] truncate">{p.display_name}</span>
 					</div>
 				)
 			})}

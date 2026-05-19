@@ -1,8 +1,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+	--bg-value: 241 233 210;
+	--surface-value: 255 255 255;
+	--surface-raised-value: 253 230 138;
+	--ink-value: 41 37 36;
+	--ink-secondary-value: 87 83 78;
+	--ink-muted-value: 120 113 108;
+	--ink-faint-value: 168 162 158;
+	--border-value: 217 196 160;
+	--accent-value: 5 150 105;
+	--accent-bg-value: 209 250 229;
+}
+
+.dark {
+	--bg-value: 12 10 9;
+	--surface-value: 28 25 23;
+	--surface-raised-value: 41 37 36;
+	--ink-value: 245 245 244;
+	--ink-secondary-value: 214 211 209;
+	--ink-muted-value: 168 162 158;
+	--ink-faint-value: 120 113 108;
+	--border-value: 68 64 60;
+	--accent-value: 52 211 153;
+	--accent-bg-value: 5 21 17;
+}
+
 @theme {
 	--font-quran: 'KFGQPC', 'Amiri Quran', serif;
+	--color-bg: rgb(var(--bg-value));
+	--color-surface: rgb(var(--surface-value) / 0.7);
+	--color-surface-raised: rgb(var(--surface-raised-value));
+	--color-ink: rgb(var(--ink-value));
+	--color-ink-secondary: rgb(var(--ink-secondary-value));
+	--color-ink-muted: rgb(var(--ink-muted-value));
+	--color-ink-faint: rgb(var(--ink-faint-value));
+	--color-border: rgb(var(--border-value) / 0.8);
+	--color-accent: rgb(var(--accent-value));
+	--color-accent-bg: rgb(var(--accent-bg-value));
 }
 
 * {
@@ -13,5 +51,27 @@ body {
 	margin: 0;
 	font-family: system-ui, -apple-system, sans-serif;
 	-webkit-font-smoothing: antialiased;
-	background-color: #09090b;
+	background-color: var(--color-bg);
+	transition: background-color 0.3s ease;
+}
+
+@keyframes parchment-drift {
+	from { background-position: 0 0; }
+	to { background-position: -80px -80px; }
+}
+
+.parchment-pattern {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: -10;
+	background-size: 80px 80px;
+	animation: parchment-drift 4s linear infinite;
+	will-change: transform;
+	backface-visibility: hidden;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C4B090%22%20stroke-width%3D%220.7%22%20opacity%3D%220.5%22%3E%3Cpolygon%20points%3D%2240%2C5%2075%2C40%2040%2C75%205%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C18%2062%2C40%2040%2C62%2018%2C40%22%2F%3E%3Cpolygon%20points%3D%220%2C5%2035%2C40%200%2C75%20-35%2C40%22%2F%3E%3Cpolygon%20points%3D%2280%2C5%2045%2C40%2080%2C75%20115%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C-35%2075%2C0%2040%2C35%205%2C0%22%2F%3E%3Cpolygon%20points%3D%2240%2C45%2075%2C80%2040%2C115%205%2C80%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+.dark .parchment-pattern {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23A09070%22%20stroke-width%3D%220.7%22%20opacity%3D%220.25%22%3E%3Cpolygon%20points%3D%2240%2C5%2075%2C40%2040%2C75%205%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C18%2062%2C40%2040%2C62%2018%2C40%22%2F%3E%3Cpolygon%20points%3D%220%2C5%2035%2C40%200%2C75%20-35%2C40%22%2F%3E%3Cpolygon%20points%3D%2280%2C5%2045%2C40%2080%2C75%20115%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C-35%2075%2C0%2040%2C35%205%2C0%22%2F%3E%3Cpolygon%20points%3D%2240%2C45%2075%2C80%2040%2C115%205%2C80%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
