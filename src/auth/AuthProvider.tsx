@@ -2,6 +2,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import { exchangeCodeForToken, parseIdToken } from './oauth'
 import { setToken, clearToken } from './tokenStore'
 
+const DEV_BYPASS = import.meta.env.DEV
+const STORAGE_KEY = 'halaq_dev_user'
+
 interface User {
 	sub: string
 	displayName: string
@@ -10,6 +13,7 @@ interface User {
 interface AuthContextValue {
 	user: User | null
 	isLoading: boolean
+	devLogin: (name: string) => void
 	logout: () => void
 }
 
@@ -20,6 +24,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
+		if (DEV_BYPASS) {
+			const saved = sessionStorage.getItem(STORAGE_KEY)
+			if (saved) {
+				setUser(JSON.parse(saved))
+			}
+			setIsLoading(false)
+			return
+		}
+
 		const params = new URLSearchParams(window.location.search)
 		const code = params.get('code')
 		const state = params.get('state')
@@ -42,13 +55,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		}
 	}, [])
 
+	function devLogin(name: string) {
+		const u = { sub: `dev-${name.toLowerCase()}`, displayName: name }
+		sessionStorage.setItem(STORAGE_KEY, JSON.stringify(u))
+		setUser(u)
+	}
+
 	function logout() {
+		sessionStorage.removeItem(STORAGE_KEY)
 		clearToken()
 		setUser(null)
 	}
 
 	return (
-		<AuthContext.Provider value={{ user, isLoading, logout }}>
+		<AuthContext.Provider value={{ user, isLoading, devLogin, logout }}>
 			{children}
 		</AuthContext.Provider>
 	)

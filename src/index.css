@@ -73,12 +73,12 @@ body {
 }
 
 @keyframes point-popup {
-	0% { transform: translateY(0); }
-	100% { transform: translateY(-40px); }
+	0% { transform: translate(-50%, 0); }
+	100% { transform: translate(-50%, -40px); }
 }
 
 .animate-point-popup {
-	animation: point-popup 1.2s ease-out forwards;
+	animation: point-popup 0.4s ease-out forwards;
 }
 
 .dark .parchment-pattern {
