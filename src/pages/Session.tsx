@@ -143,7 +143,7 @@ export function Session() {
 			</div>
 
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
-
+				<PointPopup items={popupItems} />
 				<AyahDisplay
 					ayah={currentAyah}
 					readerName={currentParticipant?.display_name ?? ''}
@@ -195,12 +195,6 @@ export function Session() {
 
 			{(meaning || wordLensLoading) && (
 				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
-			)}
-
-			{popupItems.length > 0 && (
-				<div className="fixed inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
-					<PointPopup items={popupItems} />
-				</div>
 			)}
 		</div>
 	)
