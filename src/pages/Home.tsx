@@ -6,13 +6,11 @@ import { TeamSection } from '../components/home/TeamSection'
 import { useAuth } from '../auth/AuthProvider'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { useState } from 'react'
 
 export function Home() {
-	const { user, devLogin, isLoading } = useAuth()
+	const { user, isLoading } = useAuth()
 	const navigate = useNavigate()
 	const [searchParams] = useSearchParams()
-	const [devName, setDevName] = useState('')
 	const prefilledCode = searchParams.get('join') ?? ''
 
 	async function createRoom() {
@@ -52,23 +50,6 @@ export function Home() {
 				<HeroSection />
 				<FeatureHighlights />
 			</div>
-
-			{import.meta.env.DEV && !user && (
-				<div className="flex gap-2 w-full max-w-sm">
-					<input
-						value={devName}
-						onChange={(e) => setDevName(e.target.value)}
-						placeholder="Dev name"
-						className="flex-1 px-3 py-2 bg-stone-800 border border-yellow-600 rounded-lg text-sm focus:outline-none"
-					/>
-					<button
-						onClick={() => devName && devLogin(devName)}
-						className="px-4 py-2 bg-yellow-700 hover:bg-yellow-600 rounded-lg text-sm font-semibold transition-colors"
-					>
-						Dev Login
-					</button>
-				</div>
-			)}
 
 			{user ? (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
