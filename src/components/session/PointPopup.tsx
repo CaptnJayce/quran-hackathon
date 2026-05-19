@@ -48,8 +48,10 @@ export function PointPopup({ items }: { items: PopupItem[] }) {
 		return () => clearTimeout(removalTimer)
 	}, [items])
 
+	if (showing.length === 0) return null
+
 	return (
-		<>
+		<div className="pointer-events-none flex flex-col items-center w-full">
 			{showing.map((s) => (
 				<div
 					key={s.id}
@@ -57,7 +59,7 @@ export function PointPopup({ items }: { items: PopupItem[] }) {
 						fading.has(s.index) ? 'opacity-0' : 'opacity-100'
 					}`}
 					style={{
-						marginTop: s.index > 0 ? '2.5rem' : '0',
+						marginTop: s.index > 0 ? '1rem' : '0',
 						transition: 'opacity 0.3s',
 						animation: 'point-popup 0.4s ease-out forwards',
 					}}
@@ -65,6 +67,6 @@ export function PointPopup({ items }: { items: PopupItem[] }) {
 					{s.name} gets +{s.amount} {s.reason === 'read_ayah' ? 'point' : 'points'} for {LABELS[s.reason] ?? s.reason}
 				</div>
 			))}
-		</>
+		</div>
 	)
 }
