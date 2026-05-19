@@ -39,13 +39,13 @@ export function Home() {
 	}
 
 	if (isLoading) return (
-		<div className="min-h-screen bg-stone-950 flex items-center justify-center">
-			<div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+		<div className="min-h-screen flex items-center justify-center">
+			<div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
 		</div>
 	)
 
 	return (
-		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-between px-4 py-10 gap-6">
+		<div className="min-h-screen text-stone-800 flex flex-col items-center justify-between px-4 py-10 gap-6">
 			<div className="flex flex-col items-center gap-6 w-full">
 				<HeroSection />
 				<FeatureHighlights />
@@ -57,11 +57,11 @@ export function Home() {
 						value={devName}
 						onChange={(e) => setDevName(e.target.value)}
 						placeholder="Dev name"
-						className="flex-1 px-3 py-2 bg-stone-800 border border-yellow-600 rounded-lg text-sm focus:outline-none"
+						className="flex-1 px-3 py-2 bg-white/70 border border-amber-300 rounded-lg text-sm focus:outline-none focus:border-emerald-600"
 					/>
 					<button
 						onClick={() => devName && devLogin(devName)}
-						className="px-4 py-2 bg-yellow-700 hover:bg-yellow-600 rounded-lg text-sm font-semibold transition-colors"
+						className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-semibold transition-colors"
 					>
 						Dev Login
 					</button>
@@ -70,10 +70,10 @@ export function Home() {
 
 			{user ? (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
-					<p className="text-center text-stone-400 text-sm">Salaam, {user.displayName}</p>
+					<p className="text-center text-stone-500 text-sm">Salaam, {user.displayName}</p>
 					<button
 						onClick={createRoom}
-						className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors"
+						className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors text-white"
 					>
 						Create a Circle
 					</button>

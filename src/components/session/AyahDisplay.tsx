@@ -9,8 +9,8 @@ interface Props {
 export function AyahDisplay({ ayah, readerName, onWordTap }: Props) {
 	return (
 		<div className="flex flex-col items-center gap-4 max-w-lg w-full">
-			<p className="text-stone-400 text-sm">{readerName} is reading</p>
-			<p className="text-stone-500 text-xs font-mono">{ayah.verse_key}</p>
+			<p className="text-stone-500 text-sm">{readerName} is reading</p>
+			<p className="text-stone-400 text-xs font-mono">{ayah.verse_key}</p>
 			<div
 				className="text-right leading-loose text-3xl"
 				dir="rtl"
@@ -23,7 +23,7 @@ export function AyahDisplay({ ayah, readerName, onWordTap }: Props) {
 						<span
 							key={word.id}
 							onClick={() => onWordTap(word)}
-							className="cursor-pointer hover:text-emerald-400 transition-colors px-1 rounded"
+							className="cursor-pointer hover:text-emerald-600 transition-colors px-1 rounded"
 							title={word.translation?.text}
 						>
 							{word.text_uthmani}
