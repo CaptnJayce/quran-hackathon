@@ -1,13 +1,15 @@
 import { HeroSection } from '../components/home/HeroSection'
 import { LoginButton } from '../components/home/LoginButton'
 import { JoinForm } from '../components/home/JoinForm'
+import { FeatureHighlights } from '../components/home/FeatureHighlights'
+import { TeamSection } from '../components/home/TeamSection'
 import { useAuth } from '../auth/AuthProvider'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useState } from 'react'
 
 export function Home() {
-	const { user, devLogin } = useAuth()
+	const { user, devLogin, isLoading } = useAuth()
 	const navigate = useNavigate()
 	const [devName, setDevName] = useState('')
 
@@ -36,11 +38,21 @@ export function Home() {
 		navigate(`/room/${room.id}`)
 	}
 
+	if (isLoading) return (
+		<div className="min-h-screen bg-stone-950 flex items-center justify-center">
+			<div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+		</div>
+	)
+
 	return (
-		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center px-4">
-			<HeroSection />
+		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-between px-4 py-10 gap-6">
+			<div className="flex flex-col items-center gap-6 w-full">
+				<HeroSection />
+				<FeatureHighlights />
+			</div>
+
 			{import.meta.env.DEV && !user && (
-				<div className="flex gap-2 mt-4 w-full max-w-sm">
+				<div className="flex gap-2 w-full max-w-sm">
 					<input
 						value={devName}
 						onChange={(e) => setDevName(e.target.value)}
@@ -55,8 +67,9 @@ export function Home() {
 					</button>
 				</div>
 			)}
+
 			{user ? (
-				<div className="flex flex-col gap-4 w-full max-w-sm mt-8">
+				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<p className="text-center text-stone-400 text-sm">Salaam, {user.displayName}</p>
 					<button
 						onClick={createRoom}
@@ -67,11 +80,13 @@ export function Home() {
 					<JoinForm />
 				</div>
 			) : (
-				<div className="flex flex-col gap-4 w-full max-w-sm mt-8">
+				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<LoginButton />
 					<JoinForm />
 				</div>
 			)}
+
+			<TeamSection />
 		</div>
 	)
 }
