@@ -4,14 +4,14 @@ import { JoinForm } from '../components/home/JoinForm'
 import { FeatureHighlights } from '../components/home/FeatureHighlights'
 import { TeamSection } from '../components/home/TeamSection'
 import { useAuth } from '../auth/AuthProvider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { useState } from 'react'
 
 export function Home() {
-	const { user, devLogin, isLoading } = useAuth()
+	const { user, isLoading } = useAuth()
 	const navigate = useNavigate()
-	const [devName, setDevName] = useState('')
+	const [searchParams] = useSearchParams()
+	const prefilledCode = searchParams.get('join') ?? ''
 
 	async function createRoom() {
 		if (!user) return
@@ -51,23 +51,6 @@ export function Home() {
 				<FeatureHighlights />
 			</div>
 
-			{import.meta.env.DEV && !user && (
-				<div className="flex gap-2 w-full max-w-sm">
-					<input
-						value={devName}
-						onChange={(e) => setDevName(e.target.value)}
-						placeholder="Dev name"
-						className="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm focus:outline-none focus:border-accent"
-					/>
-					<button
-						onClick={() => devName && devLogin(devName)}
-						className="px-4 py-2 bg-accent hover:brightness-110 rounded-lg text-sm font-semibold transition-colors text-white"
-					>
-						Dev Login
-					</button>
-				</div>
-			)}
-
 			{user ? (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<p className="text-center text-ink-muted text-sm">Salaam, {user.displayName}</p>
@@ -77,12 +60,11 @@ export function Home() {
 					>
 						Create a Circle
 					</button>
-					<JoinForm />
+					<JoinForm initialCode={prefilledCode} />
 				</div>
 			) : (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<LoginButton />
-					<JoinForm />
 				</div>
 			)}
 

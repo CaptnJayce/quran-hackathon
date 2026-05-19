@@ -23,5 +23,7 @@ export interface TurnState {
 	current_ayah: number
 	current_turn: string // participant id
 	audio_played: boolean
+	skip_votes: number
+	skip_voted_by: string[]
 	updated_at: string
 }

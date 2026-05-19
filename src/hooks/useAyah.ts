@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAyahsByChapter, getAyahsByJuz } from '../lib/quranApi'
+import { getAyahsByChapter, getAyahsByJuz, getAllAyahs } from '../lib/quranApi'
 import type { AyahWithTranslation } from '../types/quran'
 
 export function useAyah(surahId: number | null, juzNumber: number | null) {
@@ -14,7 +14,9 @@ export function useAyah(surahId: number | null, juzNumber: number | null) {
 
 		const promise = surahId
 			? getAyahsByChapter(surahId)
-			: getAyahsByJuz(juzNumber!)
+			: juzNumber === 31
+				? getAllAyahs()
+				: getAyahsByJuz(juzNumber!)
 
 		promise
 			.then(setAyahs)

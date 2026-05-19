@@ -1,7 +1,7 @@
 import type { WordMeaning } from '../../types/quran'
 
 interface Props {
-	meaning: WordMeaning
+	meaning: WordMeaning | null
 	isLoading: boolean
 	onClose: () => void
 }
@@ -13,8 +13,8 @@ export function WordLens({ meaning, isLoading, onClose }: Props) {
 				className="w-full bg-surface border-t border-border rounded-t-2xl px-6 py-6 flex flex-col gap-3 shadow-xl"
 				onClick={(e) => e.stopPropagation()}
 			>
-				{isLoading ? (
-					<p className="text-ink-muted text-center">Looking up word...</p>
+				{isLoading || !meaning ? (
+					<p className="text-stone-400 text-center">Looking up word...</p>
 				) : (
 					<>
 						<div className="flex justify-between items-start">

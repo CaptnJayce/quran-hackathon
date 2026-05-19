@@ -16,7 +16,6 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 
 		if (nextAyah > totalAyahs) {
 			await supabase.from('rooms').update({ status: 'complete' }).eq('id', roomId)
-			// Increment ayahs_read for current participant
 			const current = participants.find((p) => p.id === turnState.current_turn)
 			if (current) {
 				await supabase
@@ -30,7 +29,6 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 
 		const next = getNextParticipant(participants, turnState.current_turn)
 
-		// Increment ayahs_read for current reader
 		const current = participants.find((p) => p.id === turnState.current_turn)
 		if (current) {
 			await supabase
@@ -45,9 +43,38 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 				current_ayah: nextAyah,
 				current_turn: next.id,
 				audio_played: false,
+				skip_votes: 0,
+				skip_voted_by: [],
 				updated_at: new Date().toISOString(),
 			})
 			.eq('room_id', roomId)
+	}
+
+	async function skipVote(userSub: string, _onSessionEnd: () => void) {
+		if (!roomId || !turnState) return
+		if (turnState.skip_voted_by.includes(userSub)) return
+
+		const newVotedBy = [...turnState.skip_voted_by, userSub]
+		const threshold = Math.ceil(participants.length / 2)
+
+		if (newVotedBy.length >= threshold) {
+			const next = getNextParticipant(participants, turnState.current_turn)
+			await supabase
+				.from('turn_state')
+				.update({
+					current_turn: next.id,
+					audio_played: false,
+					skip_votes: 0,
+					skip_voted_by: [],
+					updated_at: new Date().toISOString(),
+				})
+				.eq('room_id', roomId)
+		} else {
+			await supabase
+				.from('turn_state')
+				.update({ skip_votes: newVotedBy.length, skip_voted_by: newVotedBy })
+				.eq('room_id', roomId)
+		}
 	}
 
 	async function markAudioPlayed() {
@@ -55,5 +82,5 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 		await supabase.from('turn_state').update({ audio_played: true }).eq('room_id', roomId)
 	}
 
-	return { currentParticipant, advanceTurn, markAudioPlayed }
+	return { currentParticipant, advanceTurn, skipVote, markAudioPlayed }
 }
