@@ -73,8 +73,8 @@ body {
 }
 
 @keyframes point-popup {
-	0% { transform: translate(-50%, 0); }
-	100% { transform: translate(-50%, -40px); }
+	0% { transform: translateY(0); }
+	100% { transform: translateY(-40px); }
 }
 
 .animate-point-popup {
