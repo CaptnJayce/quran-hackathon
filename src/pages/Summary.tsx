@@ -17,12 +17,12 @@ export function Summary() {
 		fetchStreak()
 	}, [recordStreak, fetchStreak])
 
-	if (!room) return <div className="min-h-screen text-stone-500 flex items-center justify-center">Loading...</div>
+	if (!room) return <div className="min-h-screen text-ink-muted flex items-center justify-center">Loading...</div>
 
 	return (
-		<div className="min-h-screen text-stone-800 flex flex-col items-center px-4 py-10 gap-8">
+		<div className="min-h-screen text-ink flex flex-col items-center px-4 py-10 gap-8">
 			<div className="text-center">
-				<p className="text-stone-500 text-sm mb-1">Session complete</p>
+				<p className="text-ink-muted text-sm mb-1">Session complete</p>
 				<h1 className="text-3xl font-bold">JazakAllahu Khairan</h1>
 			</div>
 

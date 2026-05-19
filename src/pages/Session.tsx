@@ -51,16 +51,16 @@ export function Session() {
 	const ayahsReady = !isLoading && ayahs.length > 0
 
 	if (!roomLoaded || (selectionMade && !ayahsReady)) {
-		return <div className="min-h-screen text-stone-500 flex items-center justify-center">Loading...</div>
+		return <div className="min-h-screen text-ink-muted flex items-center justify-center">Loading...</div>
 	}
 
 	if (!currentAyah) {
 		return (
-			<div className="min-h-screen text-stone-500 flex flex-col items-center justify-center gap-4 px-4 text-center">
+			<div className="min-h-screen text-ink-muted flex flex-col items-center justify-center gap-4 px-4 text-center">
 				<p className="text-lg">No reading was selected for this session.</p>
 				<button
 					onClick={() => navigate('/')}
-					className="px-4 py-2 bg-white/70 hover:bg-amber-100/80 text-stone-700 rounded-lg text-sm transition-colors"
+					className="px-4 py-2 bg-surface hover:brightness-95 text-ink rounded-lg text-sm transition-colors"
 				>
 					Return home
 				</button>
@@ -69,7 +69,7 @@ export function Session() {
 	}
 
 	return (
-		<div className="min-h-screen text-stone-800 flex flex-col">
+		<div className="min-h-screen text-ink flex flex-col">
 			<ProgressBar current={turnState?.current_ayah ?? 1} total={ayahs.length} />
 
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
@@ -90,7 +90,7 @@ export function Session() {
 				<div className="flex justify-between items-center">
 					<button
 						onClick={() => setShowTranslation((v) => !v)}
-						className="text-sm text-stone-500 hover:text-stone-700 transition-colors"
+						className="text-sm text-ink-faint hover:text-ink transition-colors"
 					>
 						{showTranslation ? 'Hide' : 'Show'} Translation
 					</button>

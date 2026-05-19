@@ -20,7 +20,7 @@ export function AudioControls({ verseKey, onPlay }: Props) {
 	return (
 		<button
 			onClick={isPlaying ? stop : handlePlay}
-			className="flex items-center gap-2 text-sm text-stone-500 hover:text-stone-700 transition-colors"
+			className="flex items-center gap-2 text-sm text-ink-faint hover:text-ink transition-colors"
 		>
 			{isPlaying ? (
 				<>

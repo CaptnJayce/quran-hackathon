@@ -7,11 +7,11 @@ export function NextSessionCTA({ roomCode }: { roomCode: string }) {
 		<div className="flex flex-col items-center gap-3 w-full max-w-md">
 			<button
 				onClick={() => navigate('/')}
-				className="w-full py-3 bg-amber-200 hover:bg-amber-300 rounded-xl font-semibold transition-colors text-stone-700"
+				className="w-full py-3 bg-surface-raised hover:brightness-110 rounded-xl font-semibold transition-colors text-ink"
 			>
 				Start a new circle
 			</button>
-			<p className="text-stone-400 text-xs">Room code: {roomCode}</p>
+			<p className="text-ink-faint text-xs">Room code: {roomCode}</p>
 		</div>
 	)
 }

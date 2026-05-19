@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthProvider'
+import { ThemeToggle } from './components/layout/ThemeToggle'
 import { Home } from './pages/Home'
 import { Lobby } from './pages/Lobby'
 import { Session } from './pages/Session'
@@ -10,6 +11,9 @@ export default function App() {
 		<AuthProvider>
 			<BrowserRouter>
 				<div className="parchment-pattern" />
+				<div className="fixed top-4 right-4 z-50">
+					<ThemeToggle />
+				</div>
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/room/:id" element={<Lobby />} />
