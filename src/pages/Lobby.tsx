@@ -57,6 +57,7 @@ export function Lobby() {
 
 	async function startSession() {
 		if (!id || !room || !user || room.host_id !== user.sub) return
+		new Audio('/sfx/click.mp3').play()
 
 		// Init turn_state
 		const firstParticipant = participants[0]

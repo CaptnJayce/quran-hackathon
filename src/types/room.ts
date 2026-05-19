@@ -15,6 +15,7 @@ export interface Participant {
 	display_name: string
 	turn_order: number
 	ayahs_read: number
+	points: number
 	joined_at: string
 }
 
@@ -25,5 +26,8 @@ export interface TurnState {
 	audio_played: boolean
 	skip_votes: number
 	skip_voted_by: string[]
+	ahsanta_votes: string[]
+	ahsanta_count: number
+	no_skip_counter: number
 	updated_at: string
 }

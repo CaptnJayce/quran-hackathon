@@ -19,6 +19,7 @@ create table participants (
   display_name  text not null,
   turn_order    int not null,
   ayahs_read    int default 0,
+  points        int default 0,
   joined_at     timestamptz default now()
 );
 
@@ -27,23 +28,52 @@ create table turn_state (
   current_ayah    int not null default 1,
   current_turn    uuid references participants(id),
   audio_played    boolean default false,
+  skip_votes      int default 0,
+  skip_voted_by   jsonb default '[]'::jsonb,
+  ahsanta_votes   jsonb default '[]'::jsonb,
+  ahsanta_count   int default 0,
+  no_skip_counter int default 0,
   updated_at      timestamptz default now()
+);
+
+create table points (
+  id              uuid primary key default gen_random_uuid(),
+  participant_id  uuid references participants(id) on delete cascade,
+  room_id         uuid references rooms(id) on delete cascade,
+  amount          int not null,
+  reason          text not null,
+  created_at      timestamptz default now()
+);
+
+create table streak_progress (
+  id                uuid primary key default gen_random_uuid(),
+  user_sub          text not null unique,
+  current_streak    int default 0,
+  max_streak        int default 0,
+  last_active_date  date,
+  updated_at        timestamptz default now()
 );
 
 -- Enable RLS
 alter table rooms enable row level security;
 alter table participants enable row level security;
 alter table turn_state enable row level security;
+alter table points enable row level security;
+alter table streak_progress enable row level security;
 
 -- Allow all operations for now (tighten for production)
 create policy "allow_all_rooms" on rooms for all using (true) with check (true);
 create policy "allow_all_participants" on participants for all using (true) with check (true);
 create policy "allow_all_turn_state" on turn_state for all using (true) with check (true);
+create policy "allow_all_points" on points for all using (true) with check (true);
+create policy "allow_all_streak_progress" on streak_progress for all using (true) with check (true);
 
 -- Enable Realtime on turn_state (also enable in Supabase dashboard under Database > Replication)
 alter publication supabase_realtime add table turn_state;
 alter publication supabase_realtime add table rooms;
 alter publication supabase_realtime add table participants;
+alter publication supabase_realtime add table points;
+alter publication supabase_realtime add table streak_progress;
 
 -- Auto-cleanup: rooms older than 24h (requires pg_cron extension, enable in Supabase dashboard)
 -- select cron.schedule('cleanup-old-rooms', '0 * * * *', $$

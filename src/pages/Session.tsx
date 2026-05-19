@@ -11,17 +11,56 @@ import { AudioControls } from '../components/session/AudioControls'
 import { WordLens } from '../components/session/WordLens'
 import { ProgressBar } from '../components/session/ProgressBar'
 import { DoneButton } from '../components/session/DoneButton'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { usePoints } from '../hooks/usePoints'
+import { useAhsanta } from '../hooks/useAhsanta'
+import { MiniLeaderboard } from '../components/session/MiniLeaderboard'
+import { PointPopup } from '../components/session/PointPopup'
+import { AhsantaButton } from '../components/session/AhsantaButton'
 
 export function Session() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 	const { user } = useAuth()
 	const { room, participants, turnState, loaded } = useRoom(id)
-	const { currentParticipant, advanceTurn, skipVote, markAudioPlayed } = useTurn(id, participants, turnState)
+	const { currentParticipant, advanceTurn: rawAdvanceTurn, skipVote, markAudioPlayed } = useTurn(id, participants, turnState)
+	const { addPoints } = usePoints(id)
+	const { giveAhsanta } = useAhsanta(id)
 	const { ayahs, isLoading } = useAyah(room?.surah_id ?? null, room?.juz_number ?? null)
 	const { meaning, isLoading: wordLensLoading, fetchMeaning, clear } = useWordLens()
 	const [showTranslation, setShowTranslation] = useState(false)
+	const [popupItems, setPopupItems] = useState<{ amount: number; reason: string }[]>([])
+	const [streakPlayers, setStreakPlayers] = useState<Set<string>>(new Set())
+
+	const advanceTurn = useCallback(async () => {
+		if (!currentParticipant) return
+		new Audio('/sfx/next-ayah.mp3').play()
+
+		const hadAhsanta = (turnState?.ahsanta_count ?? 0) > 0
+		const earnedStreak = (turnState?.no_skip_counter ?? 0) >= 2
+		const reader = currentParticipant
+
+		await rawAdvanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
+
+		await addPoints(reader.id, 1, 'read_ayah')
+		new Audio('/sfx/point-low.mp3').play()
+
+		const items: { amount: number; reason: string }[] = [{ amount: 1, reason: 'read_ayah' }]
+
+		if (hadAhsanta) {
+			await addPoints(reader.id, 1, 'ahsanta')
+			setTimeout(() => new Audio('/sfx/point-medium.mp3').play(), 300)
+			items.push({ amount: 1, reason: 'ahsanta' })
+		}
+		if (earnedStreak) {
+			await addPoints(reader.id, 2, 'streak_bonus')
+			setTimeout(() => new Audio('/sfx/point-high.mp3').play(), 600)
+			items.push({ amount: 2, reason: 'streak_bonus' })
+			setStreakPlayers((prev) => new Set(prev).add(reader.id))
+		}
+
+		setPopupItems(items)
+	}, [currentParticipant, turnState, rawAdvanceTurn, ayahs.length, id, navigate, addPoints])
 
 	const currentAyahIndex = (turnState?.current_ayah ?? 1) - 1
 	const currentAyah = ayahs[currentAyahIndex] ?? null
@@ -42,9 +81,9 @@ export function Session() {
 	useEffect(() => {
 		if (!loaded || !turnState) return
 		if (!currentParticipant && participants.length > 0) {
-			advanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
+			rawAdvanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
 		}
-	}, [loaded, currentParticipant, participants, turnState, advanceTurn, ayahs.length, id, navigate])
+	}, [loaded, currentParticipant, participants, turnState, rawAdvanceTurn, ayahs.length, id, navigate])
 
 	const roomLoaded = loaded && room !== null
 	const selectionMade = !!(room?.surah_id || room?.juz_number)
@@ -76,9 +115,13 @@ export function Session() {
 		)
 	}
 
+	const gaveAhsanta = turnState?.ahsanta_votes?.includes(user?.sub ?? '') ?? false
+
 	return (
 		<div className="min-h-screen text-ink flex flex-col">
 			<ProgressBar current={turnState?.current_ayah ?? 1} total={ayahs.length} />
+			<MiniLeaderboard participants={participants} streakPlayers={streakPlayers} />
+			<PointPopup items={popupItems} />
 
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
 				<TurnIndicator participants={participants} currentTurnId={turnState?.current_turn ?? ''} />
@@ -109,16 +152,22 @@ export function Session() {
 				</div>
 
 				{isMyTurn && (
-					<DoneButton onDone={() => advanceTurn(ayahs.length, () => navigate(`/summary/${id}`))} />
+					<DoneButton onDone={advanceTurn} />
 				)}
 				{!isMyTurn && currentParticipant && user && (
-					<button
-						onClick={() => skipVote(user.sub, () => navigate(`/summary/${id}`))}
-						disabled={turnState?.skip_voted_by?.includes(user.sub)}
-						className="w-full py-2 text-sm text-ink-faint hover:text-ink border border-border hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors cursor-pointer"
-					>
-						Vote to Skip ({turnState?.skip_votes ?? 0}/{Math.ceil(participants.length / 2)} needed)
-					</button>
+					<div className="flex gap-2">
+						<AhsantaButton
+							onAhsanta={() => giveAhsanta(user.sub, turnState!)}
+							disabled={gaveAhsanta}
+						/>
+						<button
+							onClick={() => skipVote(user.sub)}
+							disabled={turnState?.skip_voted_by?.includes(user.sub)}
+							className="flex-1 py-2 text-sm text-ink-faint hover:text-ink border border-border hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors cursor-pointer"
+						>
+							Vote to Skip ({turnState?.skip_votes ?? 0}/{Math.ceil(participants.length / 2)} needed)
+						</button>
+					</div>
 				)}
 			</div>
 
