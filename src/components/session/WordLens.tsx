@@ -14,12 +14,12 @@ export function WordLens({ meaning, isLoading, onClose }: Props) {
 				onClick={(e) => e.stopPropagation()}
 			>
 				{isLoading || !meaning ? (
-					<p className="text-stone-400 text-center">Looking up word...</p>
+					<p className="text-ink-muted text-center">Looking up word...</p>
 				) : (
 					<>
 						<div className="flex justify-between items-start">
 							<p className="text-3xl font-quran text-ink" dir="rtl">{meaning.arabic}</p>
-							<button onClick={onClose} className="text-ink-faint hover:text-ink text-lg">✕</button>
+							<button onClick={onClose} className="text-ink-faint hover:text-ink text-lg cursor-pointer">✕</button>
 						</div>
 						<p className="text-ink-faint text-sm italic">{meaning.transliteration}</p>
 						<p className="text-ink">{meaning.translation}</p>

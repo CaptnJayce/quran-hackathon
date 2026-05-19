@@ -56,7 +56,7 @@ export function Home() {
 					<p className="text-center text-ink-muted text-sm">Salaam, {user.displayName}</p>
 					<button
 						onClick={createRoom}
-						className="w-full py-3 bg-accent hover:brightness-110 rounded-xl font-semibold transition-colors text-white"
+						className="w-full py-3 bg-accent hover:brightness-110 rounded-xl font-semibold transition-colors text-white cursor-pointer"
 					>
 						Create a Circle
 					</button>

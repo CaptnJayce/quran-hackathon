@@ -55,8 +55,8 @@ export function Session() {
 			? 'Loading Whole Quran — this may take a moment...'
 			: 'Loading...'
 		return (
-			<div className="min-h-screen bg-stone-950 text-stone-400 flex flex-col items-center justify-center gap-3">
-				<div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+			<div className="min-h-screen text-ink-muted flex flex-col items-center justify-center gap-3">
+				<div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
 				<p className="text-sm">{loadingMsg}</p>
 			</div>
 		)
@@ -66,9 +66,9 @@ export function Session() {
 		return (
 			<div className="min-h-screen text-ink-muted flex flex-col items-center justify-center gap-4 px-4 text-center">
 				<p className="text-lg">No reading was selected for this session.</p>
-				<button
-					onClick={() => navigate('/')}
-					className="px-4 py-2 bg-surface hover:brightness-95 text-ink rounded-lg text-sm transition-colors"
+					<button
+						onClick={() => navigate('/')}
+						className="px-4 py-2 bg-surface hover:brightness-95 text-ink rounded-lg text-sm transition-colors cursor-pointer"
 				>
 					Return home
 				</button>
@@ -98,7 +98,7 @@ export function Session() {
 				<div className="flex justify-between items-center">
 					<button
 						onClick={() => setShowTranslation((v) => !v)}
-						className="text-sm text-ink-faint hover:text-ink transition-colors"
+						className="text-sm text-ink-faint hover:text-ink transition-colors cursor-pointer"
 					>
 						{showTranslation ? 'Hide' : 'Show'} Translation
 					</button>
@@ -115,7 +115,7 @@ export function Session() {
 					<button
 						onClick={() => skipVote(user.sub, () => navigate(`/summary/${id}`))}
 						disabled={turnState?.skip_voted_by?.includes(user.sub)}
-						className="w-full py-2 text-sm text-stone-400 hover:text-stone-200 border border-stone-700 hover:border-stone-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors"
+						className="w-full py-2 text-sm text-ink-faint hover:text-ink border border-border hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors cursor-pointer"
 					>
 						Vote to Skip ({turnState?.skip_votes ?? 0}/{Math.ceil(participants.length / 2)} needed)
 					</button>
