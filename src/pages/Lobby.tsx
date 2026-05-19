@@ -85,7 +85,7 @@ export function Lobby() {
 				<h1 className="text-2xl font-bold">Waiting Room</h1>
 			<button
 				onClick={leaveRoom}
-				className="text-sm text-ink-faint hover:text-red-500 transition-colors"
+				className="text-sm text-ink-faint hover:text-red-500 transition-colors cursor-pointer"
 			>
 					{isHost ? 'Cancel Room' : 'Leave'}
 				</button>
@@ -98,10 +98,10 @@ export function Lobby() {
 					<JuzSelector selected={room.juz_number} onSelect={selectJuz} />
 					<button
 						onClick={selectWholeQuran}
-						className={`w-full py-3 rounded-xl font-semibold transition-colors ${
+						className={`w-full py-3 rounded-xl font-semibold transition-colors cursor-pointer ${
 							room.juz_number === 31
-								? 'bg-emerald-600 text-white'
-								: 'bg-stone-800 border border-stone-700 hover:border-emerald-500 text-stone-300'
+								? 'bg-accent text-white'
+								: 'bg-surface border border-border hover:border-accent text-ink-muted'
 						}`}
 					>
 						Whole Quran (Khatmah)

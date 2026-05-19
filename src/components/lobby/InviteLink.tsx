@@ -17,7 +17,7 @@ export function InviteLink({ code }: { code: string }) {
 				<span className="flex-1 font-mono text-xl tracking-widest text-accent text-center">{code}</span>
 				<button
 					onClick={copy}
-					className="text-sm text-ink-faint hover:text-ink transition-colors"
+					className="text-sm text-ink-faint hover:text-ink transition-colors cursor-pointer"
 				>
 					{copied ? 'Copied!' : 'Copy link'}
 				</button>

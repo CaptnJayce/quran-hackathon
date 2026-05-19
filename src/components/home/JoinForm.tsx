@@ -71,7 +71,7 @@ export function JoinForm({ initialCode = '' }: { initialCode?: string }) {
 			<button
 				type="submit"
 				disabled={code.length < 6}
-				className="w-full py-3 bg-surface-raised hover:brightness-110 disabled:opacity-40 rounded-xl font-semibold transition-colors text-ink"
+				className="w-full py-3 bg-surface-raised hover:brightness-110 disabled:opacity-40 rounded-xl font-semibold transition-colors text-ink cursor-pointer"
 			>
 				Join Circle
 			</button>

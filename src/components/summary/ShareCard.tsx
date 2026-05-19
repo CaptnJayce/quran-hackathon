@@ -30,7 +30,7 @@ export function ShareCard({ participants, surahId, juzNumber }: Props) {
 			<p className="text-ink-secondary text-sm leading-relaxed">{text}</p>
 			<button
 				onClick={share}
-				className="py-3 bg-accent hover:brightness-110 rounded-xl font-semibold transition-colors text-white"
+				className="py-3 bg-accent hover:brightness-110 rounded-xl font-semibold transition-colors text-white cursor-pointer"
 			>
 				{copied ? 'Copied!' : 'Share'}
 			</button>
