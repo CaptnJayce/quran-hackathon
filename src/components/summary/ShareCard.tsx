@@ -11,7 +11,7 @@ export function ShareCard({ participants, surahId, juzNumber }: Props) {
 	const [copied, setCopied] = useState(false)
 
 	const total = participants.reduce((sum, p) => sum + p.ayahs_read, 0)
-	const sessionLabel = surahId ? `Surah ${surahId}` : `Juz ${juzNumber}`
+	const sessionLabel = surahId ? `Surah ${surahId}` : juzNumber === 31 ? 'the whole Quran' : `Juz ${juzNumber}`
 
 	const text = `We just completed ${sessionLabel} together on Halaqah — ${total} ayahs, ${participants.length} readers. Alhamdulillah 🤲 Join us: https://halaqah-circle.netlify.app`
 

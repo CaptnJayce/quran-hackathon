@@ -40,6 +40,11 @@ export function Lobby() {
 		await supabase.from('rooms').update({ juz_number: juzNumber, surah_id: null }).eq('id', id)
 	}
 
+	async function selectWholeQuran() {
+		if (!id) return
+		await supabase.from('rooms').update({ juz_number: 31, surah_id: null }).eq('id', id)
+	}
+
 	async function leaveRoom() {
 		if (!id || !user) return
 		if (user.sub === room?.host_id) {
@@ -91,12 +96,24 @@ export function Lobby() {
 				<div className="w-full max-w-md flex flex-col gap-4">
 					<SurahSelector selected={room.surah_id} onSelect={selectSurah} />
 					<JuzSelector selected={room.juz_number} onSelect={selectJuz} />
+					<button
+						onClick={selectWholeQuran}
+						className={`w-full py-3 rounded-xl font-semibold transition-colors ${
+							room.juz_number === 31
+								? 'bg-emerald-600 text-white'
+								: 'bg-stone-800 border border-stone-700 hover:border-emerald-500 text-stone-300'
+						}`}
+					>
+						Whole Quran (Khatmah)
+					</button>
 				</div>
 			) : (room.surah_id || room.juz_number) ? (
 				<div className="w-full max-w-md px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-stone-300 text-sm text-center">
 					{room.surah_id
 						? `Reading: ${surahName ?? `Surah ${room.surah_id}`}`
-						: `Reading: Juz ${room.juz_number}`}
+						: room.juz_number === 31
+							? 'Reading: Whole Quran (Khatmah)'
+							: `Reading: Juz ${room.juz_number}`}
 				</div>
 			) : (
 				<div className="w-full max-w-md px-4 py-3 bg-stone-900 border border-stone-800 rounded-xl text-stone-500 text-sm text-center">
