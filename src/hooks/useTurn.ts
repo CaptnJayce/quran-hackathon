@@ -13,10 +13,10 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 		if (!roomId || !turnState) return
 
 		const nextAyah = turnState.current_ayah + 1
+		const current = participants.find((p) => p.id === turnState.current_turn)
 
 		if (nextAyah > totalAyahs) {
 			await supabase.from('rooms').update({ status: 'complete' }).eq('id', roomId)
-			const current = participants.find((p) => p.id === turnState.current_turn)
 			if (current) {
 				await supabase
 					.from('participants')
@@ -29,13 +29,15 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 
 		const next = getNextParticipant(participants, turnState.current_turn)
 
-		const current = participants.find((p) => p.id === turnState.current_turn)
 		if (current) {
 			await supabase
 				.from('participants')
 				.update({ ayahs_read: current.ayahs_read + 1 })
 				.eq('id', current.id)
 		}
+
+		const earnedStreak = turnState.no_skip_counter >= 2
+		const newNoSkip = earnedStreak ? 0 : turnState.no_skip_counter + 1
 
 		await supabase
 			.from('turn_state')
@@ -45,12 +47,15 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 				audio_played: false,
 				skip_votes: 0,
 				skip_voted_by: [],
+				ahsanta_votes: [],
+				ahsanta_count: 0,
+				no_skip_counter: newNoSkip,
 				updated_at: new Date().toISOString(),
 			})
 			.eq('room_id', roomId)
 	}
 
-	async function skipVote(userSub: string, _onSessionEnd: () => void) {
+	async function skipVote(userSub: string) {
 		if (!roomId || !turnState) return
 		if (turnState.skip_voted_by.includes(userSub)) return
 
@@ -66,6 +71,7 @@ export function useTurn(roomId: string | undefined, participants: Participant[],
 					audio_played: false,
 					skip_votes: 0,
 					skip_voted_by: [],
+					no_skip_counter: 0,
 					updated_at: new Date().toISOString(),
 				})
 				.eq('room_id', roomId)

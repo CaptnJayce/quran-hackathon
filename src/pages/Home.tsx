@@ -15,6 +15,7 @@ export function Home() {
 
 	async function createRoom() {
 		if (!user) return
+		new Audio('/sfx/click.mp3').play()
 		const code = Math.random().toString(36).slice(2, 8).toUpperCase()
 
 		const { data: room, error } = await supabase
