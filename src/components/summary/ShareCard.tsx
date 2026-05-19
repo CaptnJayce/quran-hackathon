@@ -13,7 +13,7 @@ export function ShareCard({ participants, surahId, juzNumber }: Props) {
 	const total = participants.reduce((sum, p) => sum + p.ayahs_read, 0)
 	const sessionLabel = surahId ? `Surah ${surahId}` : `Juz ${juzNumber}`
 
-	const text = `We just completed ${sessionLabel} together on Halaq — ${total} ayahs, ${participants.length} readers. Alhamdulillah 🤲 Join us: halaq.app`
+	const text = `We just completed ${sessionLabel} together on Halaqah — ${total} ayahs, ${participants.length} readers. Alhamdulillah 🤲 Join us: https://halaq.covelopers.com`
 
 	function share() {
 		if (navigator.share) {

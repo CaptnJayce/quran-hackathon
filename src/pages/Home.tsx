@@ -4,14 +4,16 @@ import { JoinForm } from '../components/home/JoinForm'
 import { FeatureHighlights } from '../components/home/FeatureHighlights'
 import { TeamSection } from '../components/home/TeamSection'
 import { useAuth } from '../auth/AuthProvider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useState } from 'react'
 
 export function Home() {
 	const { user, devLogin, isLoading } = useAuth()
 	const navigate = useNavigate()
+	const [searchParams] = useSearchParams()
 	const [devName, setDevName] = useState('')
+	const prefilledCode = searchParams.get('join') ?? ''
 
 	async function createRoom() {
 		if (!user) return
@@ -77,12 +79,12 @@ export function Home() {
 					>
 						Create a Circle
 					</button>
-					<JoinForm />
+					<JoinForm initialCode={prefilledCode} />
 				</div>
 			) : (
 				<div className="flex flex-col gap-4 w-full max-w-sm">
 					<LoginButton />
-					<JoinForm />
+					<JoinForm initialCode={prefilledCode} />
 				</div>
 			)}
 
