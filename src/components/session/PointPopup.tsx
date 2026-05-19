@@ -23,16 +23,17 @@ export function PointPopup({ items }: { items: PopupItem[] }) {
 				setTimeout(() => {
 					setShowing((prev) => prev.filter((s) => s.id !== id))
 				}, 1700)
-			}, i * 300)
+			}, i * 100)
 		})
 	}, [items])
 
 	return (
 		<div className="fixed inset-0 pointer-events-none z-20">
-			{showing.map((s) => (
+			{showing.map((s, i) => (
 				<div
 					key={s.id}
-					className="absolute top-1/3 left-1/2 -translate-x-1/2 animate-point-popup text-accent font-bold text-lg"
+					className="absolute left-1/2 -translate-x-1/2 animate-point-popup text-accent font-bold text-lg"
+					style={{ top: `calc(33% + ${i * 2.5}rem)` }}
 				>
 					+{s.amount} {s.reason === 'streak_bonus' ? 'for streak!' : s.reason === 'ahsanta' ? 'from congratulations!' : 'point!'}
 				</div>

@@ -12,6 +12,7 @@ import { WordLens } from '../components/session/WordLens'
 import { ProgressBar } from '../components/session/ProgressBar'
 import { DoneButton } from '../components/session/DoneButton'
 import { useEffect, useState, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
 import { usePoints } from '../hooks/usePoints'
 import { useAhsanta } from '../hooks/useAhsanta'
 import { MiniLeaderboard } from '../components/session/MiniLeaderboard'
@@ -34,7 +35,6 @@ export function Session() {
 
 	const advanceTurn = useCallback(async () => {
 		if (!currentParticipant) return
-		new Audio('/sfx/next-ayah.mp3').play()
 
 		const hadAhsanta = (turnState?.ahsanta_count ?? 0) > 0
 		const earnedStreak = (turnState?.no_skip_counter ?? 0) >= 2
@@ -49,12 +49,12 @@ export function Session() {
 
 		if (hadAhsanta) {
 			await addPoints(reader.id, 1, 'ahsanta')
-			setTimeout(() => new Audio('/sfx/point-medium.mp3').play(), 300)
+			setTimeout(() => new Audio('/sfx/point-medium.mp3').play(), 100)
 			items.push({ amount: 1, reason: 'ahsanta' })
 		}
 		if (earnedStreak) {
 			await addPoints(reader.id, 2, 'streak_bonus')
-			setTimeout(() => new Audio('/sfx/point-high.mp3').play(), 600)
+			setTimeout(() => new Audio('/sfx/point-high.mp3').play(), 200)
 			items.push({ amount: 2, reason: 'streak_bonus' })
 			setStreakPlayers((prev) => new Set(prev).add(reader.id))
 		}
@@ -117,11 +117,27 @@ export function Session() {
 
 	const gaveAhsanta = turnState?.ahsanta_votes?.includes(user?.sub ?? '') ?? false
 
+	async function quitSession() {
+		if (!id || !user) return
+		if (user.sub === room?.host_id) {
+			await supabase.from('rooms').update({ status: 'complete' }).eq('id', id)
+		} else {
+			await supabase.from('participants').delete().eq('room_id', id).eq('user_sub', user.sub)
+		}
+		navigate('/')
+	}
+
 	return (
 		<div className="min-h-screen text-ink flex flex-col">
 			<ProgressBar current={turnState?.current_ayah ?? 1} total={ayahs.length} />
 			<MiniLeaderboard participants={participants} streakPlayers={streakPlayers} />
 			<PointPopup items={popupItems} />
+			<button
+				onClick={quitSession}
+				className="fixed top-4 right-16 z-10 px-4 py-2 text-sm rounded-xl border border-border text-ink-faint hover:text-red-500 hover:border-red-500 transition-colors cursor-pointer"
+			>
+				Quit
+			</button>
 
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
 				<TurnIndicator participants={participants} currentTurnId={turnState?.current_turn ?? ''} />
