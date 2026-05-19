@@ -9,6 +9,7 @@ export default function App() {
 	return (
 		<AuthProvider>
 			<BrowserRouter>
+				<div className="parchment-pattern" />
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/room/:id" element={<Lobby />} />

@@ -7,8 +7,8 @@ export function TranslationPanel({ text }: Props) {
 	const clean = text.replace(/<[^>]+>/g, '')
 
 	return (
-		<div className="w-full max-w-lg px-4 py-3 bg-stone-800 rounded-xl border border-stone-700">
-			<p className="text-stone-300 text-sm leading-relaxed">{clean}</p>
+		<div className="w-full max-w-lg px-4 py-3 bg-white/70 rounded-xl border border-amber-200/80">
+			<p className="text-stone-600 text-sm leading-relaxed">{clean}</p>
 		</div>
 	)
 }

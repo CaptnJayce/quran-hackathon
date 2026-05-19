@@ -14,12 +14,12 @@ export function LoginButton() {
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 					placeholder="Your name"
-					className="flex-1 px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl focus:outline-none focus:border-emerald-500"
+					className="flex-1 px-4 py-3 bg-white/70 border border-amber-200/80 rounded-xl focus:outline-none focus:border-emerald-600"
 					onKeyDown={(e) => e.key === 'Enter' && name.trim() && devLogin(name.trim())}
 				/>
 				<button
 					onClick={() => name.trim() && devLogin(name.trim())}
-					className="px-4 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors"
+					className="px-4 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors text-white"
 				>
 					Dev Login
 				</button>
@@ -30,7 +30,7 @@ export function LoginButton() {
 	return (
 		<button
 			onClick={redirectToLogin}
-			className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors"
+			className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-colors text-white"
 		>
 			Sign in with Quran Foundation
 		</button>

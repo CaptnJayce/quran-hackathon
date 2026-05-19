@@ -13,5 +13,22 @@ body {
 	margin: 0;
 	font-family: system-ui, -apple-system, sans-serif;
 	-webkit-font-smoothing: antialiased;
-	background-color: #09090b;
+	background-color: #F1E9D2;
+}
+
+@keyframes parchment-drift {
+	from { background-position: 0 0; }
+	to { background-position: -80px -80px; }
+}
+
+.parchment-pattern {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: -10;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C4B090%22%20stroke-width%3D%220.7%22%20opacity%3D%220.5%22%3E%3Cpolygon%20points%3D%2240%2C5%2075%2C40%2040%2C75%205%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C18%2062%2C40%2040%2C62%2018%2C40%22%2F%3E%3Cpolygon%20points%3D%220%2C5%2035%2C40%200%2C75%20-35%2C40%22%2F%3E%3Cpolygon%20points%3D%2280%2C5%2045%2C40%2080%2C75%20115%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C-35%2075%2C0%2040%2C35%205%2C0%22%2F%3E%3Cpolygon%20points%3D%2240%2C45%2075%2C80%2040%2C115%205%2C80%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+	background-size: 80px 80px;
+	animation: parchment-drift 4s linear infinite;
+	will-change: transform;
+	backface-visibility: hidden;
 }
