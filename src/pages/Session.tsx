@@ -11,6 +11,7 @@ import { AudioControls } from '../components/session/AudioControls'
 import { WordLens } from '../components/session/WordLens'
 import { ProgressBar } from '../components/session/ProgressBar'
 import { DoneButton } from '../components/session/DoneButton'
+import { PointPopup } from '../components/session/PointPopup'
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { usePoints } from '../hooks/usePoints'
@@ -137,10 +138,11 @@ export function Session() {
 				Quit
 			</button>
 
+			<div className="px-4 py-3 flex justify-center">
+				<TurnIndicator participants={participants} currentTurnId={turnState?.current_turn ?? ''} />
+			</div>
+
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
-				<div className="relative">
-					<TurnIndicator participants={participants} currentTurnId={turnState?.current_turn ?? ''} popupItems={popupItems} />
-				</div>
 
 				<AyahDisplay
 					ayah={currentAyah}
@@ -193,6 +195,12 @@ export function Session() {
 
 			{(meaning || wordLensLoading) && (
 				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
+			)}
+
+			{popupItems.length > 0 && (
+				<div className="fixed inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
+					<PointPopup items={popupItems} />
+				</div>
 			)}
 		</div>
 	)
