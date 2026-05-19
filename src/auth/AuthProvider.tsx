@@ -3,6 +3,7 @@ import { exchangeCodeForToken, parseIdToken } from './oauth'
 import { setToken, clearToken } from './tokenStore'
 
 const DEV_BYPASS = import.meta.env.DEV
+const STORAGE_KEY = 'halaq_dev_user'
 
 interface User {
 	sub: string
@@ -24,6 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		if (DEV_BYPASS) {
+			const saved = sessionStorage.getItem(STORAGE_KEY)
+			if (saved) {
+				setUser(JSON.parse(saved))
+			}
 			setIsLoading(false)
 			return
 		}
@@ -51,10 +56,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, [])
 
 	function devLogin(name: string) {
-		setUser({ sub: `dev-${name.toLowerCase()}`, displayName: name })
+		const u = { sub: `dev-${name.toLowerCase()}`, displayName: name }
+		sessionStorage.setItem(STORAGE_KEY, JSON.stringify(u))
+		setUser(u)
 	}
 
 	function logout() {
+		sessionStorage.removeItem(STORAGE_KEY)
 		clearToken()
 		setUser(null)
 	}

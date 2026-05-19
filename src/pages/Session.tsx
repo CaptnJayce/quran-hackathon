@@ -11,12 +11,12 @@ import { AudioControls } from '../components/session/AudioControls'
 import { WordLens } from '../components/session/WordLens'
 import { ProgressBar } from '../components/session/ProgressBar'
 import { DoneButton } from '../components/session/DoneButton'
+import { PointPopup } from '../components/session/PointPopup'
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { usePoints } from '../hooks/usePoints'
 import { useAhsanta } from '../hooks/useAhsanta'
 import { MiniLeaderboard } from '../components/session/MiniLeaderboard'
-import { PointPopup } from '../components/session/PointPopup'
 import { AhsantaButton } from '../components/session/AhsantaButton'
 
 export function Session() {
@@ -30,7 +30,7 @@ export function Session() {
 	const { ayahs, isLoading } = useAyah(room?.surah_id ?? null, room?.juz_number ?? null)
 	const { meaning, isLoading: wordLensLoading, fetchMeaning, clear } = useWordLens()
 	const [showTranslation, setShowTranslation] = useState(false)
-	const [popupItems, setPopupItems] = useState<{ amount: number; reason: string }[]>([])
+	const [popupItems, setPopupItems] = useState<{ amount: number; reason: string; name: string }[]>([])
 	const [streakPlayers, setStreakPlayers] = useState<Set<string>>(new Set())
 
 	const advanceTurn = useCallback(async () => {
@@ -45,17 +45,17 @@ export function Session() {
 		await addPoints(reader.id, 1, 'read_ayah')
 		new Audio('/sfx/point-low.mp3').play()
 
-		const items: { amount: number; reason: string }[] = [{ amount: 1, reason: 'read_ayah' }]
+		const items: { amount: number; reason: string; name: string }[] = [{ amount: 1, reason: 'read_ayah', name: reader.display_name }]
 
 		if (hadAhsanta) {
 			await addPoints(reader.id, 1, 'ahsanta')
 			setTimeout(() => new Audio('/sfx/point-medium.mp3').play(), 100)
-			items.push({ amount: 1, reason: 'ahsanta' })
+			items.push({ amount: 1, reason: 'ahsanta', name: reader.display_name })
 		}
 		if (earnedStreak) {
 			await addPoints(reader.id, 2, 'streak_bonus')
 			setTimeout(() => new Audio('/sfx/point-high.mp3').play(), 200)
-			items.push({ amount: 2, reason: 'streak_bonus' })
+			items.push({ amount: 2, reason: 'streak_bonus', name: reader.display_name })
 			setStreakPlayers((prev) => new Set(prev).add(reader.id))
 		}
 
@@ -131,7 +131,6 @@ export function Session() {
 		<div className="min-h-screen text-ink flex flex-col">
 			<ProgressBar current={turnState?.current_ayah ?? 1} total={ayahs.length} />
 			<MiniLeaderboard participants={participants} streakPlayers={streakPlayers} />
-			<PointPopup items={popupItems} />
 			<button
 				onClick={quitSession}
 				className="fixed top-4 right-16 z-10 px-4 py-2 text-sm rounded-xl border border-border text-ink-faint hover:text-red-500 hover:border-red-500 transition-colors cursor-pointer"
@@ -139,8 +138,11 @@ export function Session() {
 				Quit
 			</button>
 
-			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
+			<div className="px-4 py-3 flex justify-center">
 				<TurnIndicator participants={participants} currentTurnId={turnState?.current_turn ?? ''} />
+			</div>
+
+			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
 
 				<AyahDisplay
 					ayah={currentAyah}
@@ -149,7 +151,11 @@ export function Session() {
 				/>
 
 				{showTranslation && (
-					<TranslationPanel text={currentAyah.translations?.[0]?.text ?? 'Translation not available.'} />
+					<TranslationPanel
+						verseKey={currentAyah.verse_key}
+						initialText={currentAyah.translations?.[0]?.text ?? 'Translation not available.'}
+						onClose={() => setShowTranslation(false)}
+					/>
 				)}
 			</div>
 
@@ -179,7 +185,7 @@ export function Session() {
 						<button
 							onClick={() => skipVote(user.sub)}
 							disabled={turnState?.skip_voted_by?.includes(user.sub)}
-							className="flex-1 py-2 text-sm text-ink-faint hover:text-ink border border-border hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors cursor-pointer"
+							className="flex-1 py-4 text-lg font-bold border border-border text-ink-faint hover:text-ink hover:border-accent disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors cursor-pointer"
 						>
 							Vote to Skip ({turnState?.skip_votes ?? 0}/{Math.ceil(participants.length / 2)} needed)
 						</button>
@@ -189,6 +195,12 @@ export function Session() {
 
 			{(meaning || wordLensLoading) && (
 				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
+			)}
+
+			{popupItems.length > 0 && (
+				<div className="fixed inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
+					<PointPopup items={popupItems} />
+				</div>
 			)}
 		</div>
 	)

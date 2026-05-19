@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useRoom } from '../hooks/useRoom'
-import { useStreak } from '../hooks/useStreak'
+import { useDailyStreak } from '../hooks/useDailyStreak'
+import { useAuth } from '../auth/AuthProvider'
 import { StatsGrid } from '../components/summary/StatsGrid'
 import { StreakBadge } from '../components/summary/StreakBadge'
 import { ShareCard } from '../components/summary/ShareCard'
@@ -9,13 +10,13 @@ import { useEffect } from 'react'
 
 export function Summary() {
 	const { id } = useParams<{ id: string }>()
+	const { user } = useAuth()
 	const { room, participants } = useRoom(id)
-	const { streak, fetchStreak, recordStreak } = useStreak()
+	const { streak, recordDailyStreak } = useDailyStreak(user?.sub)
 
 	useEffect(() => {
-		recordStreak()
-		fetchStreak()
-	}, [recordStreak, fetchStreak])
+		recordDailyStreak()
+	}, [recordDailyStreak])
 
 	if (!room) return <div className="min-h-screen text-ink-muted flex items-center justify-center">Loading...</div>
 
@@ -27,7 +28,7 @@ export function Summary() {
 			</div>
 
 			<StatsGrid participants={participants} />
-			{streak !== null && <StreakBadge streak={streak} />}
+			{streak > 0 && <StreakBadge streak={streak} />}
 			<ShareCard participants={participants} surahId={room.surah_id} juzNumber={room.juz_number} />
 			<NextSessionCTA roomCode={room.code} />
 		</div>
