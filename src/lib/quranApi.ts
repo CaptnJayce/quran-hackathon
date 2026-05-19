@@ -33,6 +33,13 @@ export async function getAyahsByJuz(juzNumber: number): Promise<AyahWithTranslat
 	return data.verses
 }
 
+export async function getAllAyahs(): Promise<AyahWithTranslation[]> {
+	const results = await Promise.all(
+		Array.from({ length: 30 }, (_, i) => getAyahsByJuz(i + 1))
+	)
+	return results.flat()
+}
+
 export function getAudioUrlForAyah(verseKey: string): string {
 	const [surah, ayah] = verseKey.split(':')
 	const s = String(surah).padStart(3, '0')

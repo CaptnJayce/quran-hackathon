@@ -4,8 +4,8 @@ export function Header() {
 	const { user, logout } = useAuth()
 
 	return (
-		<header className="flex items-center justify-between px-4 py-3 border-b border-border">
-			<span className="font-bold text-accent text-lg tracking-tight">Halaq</span>
+		<header className="flex items-center justify-between px-4 py-3 border-b border-stone-800">
+			<span className="font-bold text-emerald-400 text-lg tracking-tight">Halaqah</span>
 			{user && (
 				<button
 					onClick={logout}

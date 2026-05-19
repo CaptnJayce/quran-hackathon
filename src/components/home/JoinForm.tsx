@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../auth/AuthProvider'
 
-export function JoinForm() {
-	const [code, setCode] = useState('')
+export function JoinForm({ initialCode = '' }: { initialCode?: string }) {
+	const [code, setCode] = useState(initialCode.toUpperCase())
 	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
 	const { user } = useAuth()

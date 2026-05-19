@@ -18,9 +18,9 @@ export function Session() {
 	const navigate = useNavigate()
 	const { user } = useAuth()
 	const { room, participants, turnState, loaded } = useRoom(id)
-	const { currentParticipant, advanceTurn, markAudioPlayed } = useTurn(id, participants, turnState)
+	const { currentParticipant, advanceTurn, skipVote, markAudioPlayed } = useTurn(id, participants, turnState)
 	const { ayahs, isLoading } = useAyah(room?.surah_id ?? null, room?.juz_number ?? null)
-	const { meaning, setMeaningFromWord, clear } = useWordLens()
+	const { meaning, isLoading: wordLensLoading, fetchMeaning, clear } = useWordLens()
 	const [showTranslation, setShowTranslation] = useState(false)
 
 	const currentAyahIndex = (turnState?.current_ayah ?? 1) - 1
@@ -51,7 +51,15 @@ export function Session() {
 	const ayahsReady = !isLoading && ayahs.length > 0
 
 	if (!roomLoaded || (selectionMade && !ayahsReady)) {
-		return <div className="min-h-screen text-ink-muted flex items-center justify-center">Loading...</div>
+		const loadingMsg = room?.juz_number === 31
+			? 'Loading Whole Quran — this may take a moment...'
+			: 'Loading...'
+		return (
+			<div className="min-h-screen bg-stone-950 text-stone-400 flex flex-col items-center justify-center gap-3">
+				<div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+				<p className="text-sm">{loadingMsg}</p>
+			</div>
+		)
 	}
 
 	if (!currentAyah) {
@@ -78,7 +86,7 @@ export function Session() {
 				<AyahDisplay
 					ayah={currentAyah}
 					readerName={currentParticipant?.display_name ?? ''}
-					onWordTap={(word) => setMeaningFromWord(word)}
+					onWordTap={(word) => fetchMeaning(word, currentAyah.verse_key)}
 				/>
 
 				{showTranslation && (
@@ -103,10 +111,19 @@ export function Session() {
 				{isMyTurn && (
 					<DoneButton onDone={() => advanceTurn(ayahs.length, () => navigate(`/summary/${id}`))} />
 				)}
+				{!isMyTurn && currentParticipant && user && (
+					<button
+						onClick={() => skipVote(user.sub, () => navigate(`/summary/${id}`))}
+						disabled={turnState?.skip_voted_by?.includes(user.sub)}
+						className="w-full py-2 text-sm text-stone-400 hover:text-stone-200 border border-stone-700 hover:border-stone-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors"
+					>
+						Vote to Skip ({turnState?.skip_votes ?? 0}/{Math.ceil(participants.length / 2)} needed)
+					</button>
+				)}
 			</div>
 
-			{meaning && (
-				<WordLens meaning={meaning} isLoading={false} onClose={clear} />
+			{(meaning || wordLensLoading) && (
+				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
 			)}
 		</div>
 	)
