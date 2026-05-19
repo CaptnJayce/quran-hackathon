@@ -9,7 +9,7 @@ export function Header() {
 			{user && (
 				<button
 					onClick={logout}
-					className="text-sm text-stone-400 hover:text-stone-200 transition-colors"
+					className="text-sm text-ink-faint hover:text-ink transition-colors"
 				>
 					Sign out
 				</button>

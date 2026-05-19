@@ -74,19 +74,19 @@ export function Lobby() {
 		navigate(`/session/${id}`)
 	}
 
-	if (error) return <div className="p-8 text-red-400">Error: {error}</div>
-	if (!room) return <div className="p-8 text-stone-400">Loading...</div>
+	if (error) return <div className="p-8 text-red-500">Error: {error}</div>
+	if (!room) return <div className="p-8 text-ink-muted">Loading...</div>
 
 	const isHost = user?.sub === room.host_id
 
 	return (
-		<div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center px-4 py-8 gap-6">
+		<div className="min-h-screen text-ink flex flex-col items-center px-4 py-8 gap-6">
 			<div className="w-full max-w-md flex items-center justify-between">
 				<h1 className="text-2xl font-bold">Waiting Room</h1>
-				<button
-					onClick={leaveRoom}
-					className="text-sm text-stone-500 hover:text-red-400 transition-colors"
-				>
+			<button
+				onClick={leaveRoom}
+				className="text-sm text-ink-faint hover:text-red-500 transition-colors"
+			>
 					{isHost ? 'Cancel Room' : 'Leave'}
 				</button>
 			</div>
@@ -108,7 +108,7 @@ export function Lobby() {
 					</button>
 				</div>
 			) : (room.surah_id || room.juz_number) ? (
-				<div className="w-full max-w-md px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-stone-300 text-sm text-center">
+				<div className="w-full max-w-md px-4 py-3 bg-surface border border-border rounded-xl text-ink-secondary text-sm text-center">
 					{room.surah_id
 						? `Reading: ${surahName ?? `Surah ${room.surah_id}`}`
 						: room.juz_number === 31
@@ -116,13 +116,13 @@ export function Lobby() {
 							: `Reading: Juz ${room.juz_number}`}
 				</div>
 			) : (
-				<div className="w-full max-w-md px-4 py-3 bg-stone-900 border border-stone-800 rounded-xl text-stone-500 text-sm text-center">
+				<div className="w-full max-w-md px-4 py-3 bg-surface/50 border border-border rounded-xl text-ink-faint text-sm text-center">
 					Waiting for host to select a surah or juz...
 				</div>
 			)}
 
 			<div className="w-full max-w-md flex flex-col gap-2">
-				<h2 className="text-stone-400 text-sm font-medium uppercase tracking-wide">Participants</h2>
+				<h2 className="text-ink-muted text-sm font-medium uppercase tracking-wide">Participants</h2>
 				{participants.map((p) => (
 					<ParticipantCard key={p.id} participant={p} isHost={p.user_sub === room.host_id} />
 				))}
