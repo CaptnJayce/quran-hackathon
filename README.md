@@ -1,2 +1,5 @@
-# quran-hackathon
-Improve accessibility, deepen understanding, build habits, or introduce entirely new ways to engage with the Quran using the Quran Foundation's powerful API ecosystem.
+# Halaqah
+
+A digital Quran reading circle, aimed at helping Muslims practice their recitation in an accessible and digital way.
+
+Submission for [Quran Hackathon](https://launch.provisioncapital.com/quran-hackathon)
