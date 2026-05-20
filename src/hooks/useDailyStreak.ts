@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 export function useDailyStreak(userSub: string | undefined) {
 	const [streak, setStreak] = useState<number>(0)
 
-	async function fetchStreak() {
+	const fetchStreak = useCallback(async () => {
 		if (!userSub) return
 		const { data } = await supabase
 			.from('streak_progress')
@@ -12,22 +12,20 @@ export function useDailyStreak(userSub: string | undefined) {
 			.eq('user_sub', userSub)
 			.maybeSingle()
 
-		if (data) {
-			setStreak(data.current_streak)
-		}
-	}
+		if (data) setStreak(data.current_streak)
+	}, [userSub])
 
 	useEffect(() => {
 		if (!userSub) return
 		fetchStreak()
-	}, [userSub])
+	}, [userSub, fetchStreak])
 
-	async function recordDailyStreak(): Promise<void> {
+	const recordDailyStreak = useCallback(async (): Promise<void> => {
 		if (!userSub) return
 
 		const { data: existing } = await supabase
 			.from('streak_progress')
-			.select('current_streak, last_active_date')
+			.select('current_streak, max_streak, last_active_date')
 			.eq('user_sub', userSub)
 			.maybeSingle()
 
@@ -45,33 +43,26 @@ export function useDailyStreak(userSub: string | undefined) {
 		}
 
 		const lastDate = existing.last_active_date
-		let newStreak = existing.current_streak
 
-		if (lastDate === today) {
-			return
-		}
+		if (lastDate === today) return
 
 		const yesterday = new Date()
 		yesterday.setDate(yesterday.getDate() - 1)
 		const yesterdayStr = yesterday.toISOString().split('T')[0]
 
-		if (lastDate === yesterdayStr) {
-			newStreak += 1
-		} else {
-			newStreak = 1
-		}
+		const newStreak = lastDate === yesterdayStr ? existing.current_streak + 1 : 1
 
 		await supabase
 			.from('streak_progress')
 			.update({
 				current_streak: newStreak,
-				max_streak: newStreak,
+				max_streak: Math.max(newStreak, existing.max_streak),
 				last_active_date: today,
 			})
 			.eq('user_sub', userSub)
 
 		setStreak(newStreak)
-	}
+	}, [userSub])
 
 	return { streak, recordDailyStreak }
 }

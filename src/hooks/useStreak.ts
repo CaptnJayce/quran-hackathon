@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react'
 import { authHeaders } from '../auth/tokenStore'
 
-const QF_API = 'https://api.quran.foundation/api/v4'
+const QF_AUTH_BASE = 'https://api.quran.foundation'
 
 export function useStreak() {
 	const [streak, setStreak] = useState<number | null>(null)
 
 	const fetchStreak = useCallback(async () => {
 		try {
-			const res = await fetch(`${QF_API}/auth/v1/streak`, {
+			const res = await fetch(`${QF_AUTH_BASE}/auth/v1/streak`, {
 				headers: authHeaders(),
 			})
 			if (!res.ok) return
@@ -21,7 +21,7 @@ export function useStreak() {
 
 	const recordStreak = useCallback(async () => {
 		try {
-			await fetch(`${QF_API}/auth/v1/streak`, {
+			await fetch(`${QF_AUTH_BASE}/auth/v1/streak`, {
 				method: 'POST',
 				headers: { ...authHeaders(), 'Content-Type': 'application/json' },
 			})

@@ -41,8 +41,6 @@ export function useRoom(roomId: string | undefined) {
 		if (!roomId) return
 
 		fetchAll().then(() => setLoaded(true))
-
-		return () => {}
 	}, [roomId, fetchAll])
 
 	useEffect(() => {

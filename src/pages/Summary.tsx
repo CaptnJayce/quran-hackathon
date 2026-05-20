@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useRoom } from '../hooks/useRoom'
 import { useDailyStreak } from '../hooks/useDailyStreak'
+import { useStreak } from '../hooks/useStreak'
 import { useAuth } from '../auth/AuthProvider'
 import { StatsGrid } from '../components/summary/StatsGrid'
 import { StreakBadge } from '../components/summary/StreakBadge'
@@ -13,10 +14,12 @@ export function Summary() {
 	const { user } = useAuth()
 	const { room, participants } = useRoom(id)
 	const { streak, recordDailyStreak } = useDailyStreak(user?.sub)
+	const { recordStreak } = useStreak()
 
 	useEffect(() => {
 		recordDailyStreak()
-	}, [recordDailyStreak])
+		recordStreak()
+	}, [recordDailyStreak, recordStreak])
 
 	if (!room) return <div className="min-h-screen text-ink-muted flex items-center justify-center">Loading...</div>
 
