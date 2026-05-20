@@ -34,18 +34,6 @@ export interface AyahWithTranslation extends Ayah {
 	translations: Translation[]
 }
 
-export interface AudioFile {
-	url: string
-	duration: number
-	verse_timings?: VerseTiming[]
-}
-
-export interface VerseTiming {
-	verse_key: string
-	timestamp_from: number
-	timestamp_to: number
-}
-
 export interface WordMeaning {
 	arabic: string
 	transliteration: string

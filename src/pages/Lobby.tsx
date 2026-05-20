@@ -23,7 +23,6 @@ export function Lobby() {
 		}
 	}, [room?.surah_id])
 
-	// Redirect when session goes active
 	useEffect(() => {
 		if (room?.status === 'active') {
 			navigate(`/session/${id}`)
@@ -59,7 +58,6 @@ export function Lobby() {
 		if (!id || !room || !user || room.host_id !== user.sub) return
 		new Audio('/sfx/click.mp3').play()
 
-		// Init turn_state
 		const firstParticipant = participants[0]
 		if (!firstParticipant) return
 

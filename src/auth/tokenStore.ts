@@ -1,6 +1,3 @@
-// Access token lives in memory only — never localStorage, never sessionStorage
-// Intentionally lost on tab close. Short sessions, no persistent auth surface.
-
 let _accessToken: string | null = null
 
 export function setToken(token: string) {
@@ -17,5 +14,5 @@ export function clearToken() {
 
 export function authHeaders(): Record<string, string> {
 	if (!_accessToken) return {}
-	return { 'x-auth-token': _accessToken }
+	return { Authorization: `Bearer ${_accessToken}` }
 }
