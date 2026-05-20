@@ -72,6 +72,15 @@ body {
 	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C4B090%22%20stroke-width%3D%220.7%22%20opacity%3D%220.5%22%3E%3Cpolygon%20points%3D%2240%2C5%2075%2C40%2040%2C75%205%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C18%2062%2C40%2040%2C62%2018%2C40%22%2F%3E%3Cpolygon%20points%3D%220%2C5%2035%2C40%200%2C75%20-35%2C40%22%2F%3E%3Cpolygon%20points%3D%2280%2C5%2045%2C40%2080%2C75%20115%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C-35%2075%2C0%2040%2C35%205%2C0%22%2F%3E%3Cpolygon%20points%3D%2240%2C45%2075%2C80%2040%2C115%205%2C80%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 
+@keyframes point-popup-in {
+	0%   { opacity: 0; transform: translateY(8px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes point-popup-out {
+	0%   { opacity: 1; transform: translateY(0); }
+	100% { opacity: 0; transform: translateY(-12px); }
+}
 
 .dark .parchment-pattern {
 	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%20viewBox%3D%220%200%2080%2080%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23A09070%22%20stroke-width%3D%220.7%22%20opacity%3D%220.25%22%3E%3Cpolygon%20points%3D%2240%2C5%2075%2C40%2040%2C75%205%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C18%2062%2C40%2040%2C62%2018%2C40%22%2F%3E%3Cpolygon%20points%3D%220%2C5%2035%2C40%200%2C75%20-35%2C40%22%2F%3E%3Cpolygon%20points%3D%2280%2C5%2045%2C40%2080%2C75%20115%2C40%22%2F%3E%3Cpolygon%20points%3D%2240%2C-35%2075%2C0%2040%2C35%205%2C0%22%2F%3E%3Cpolygon%20points%3D%2240%2C45%2075%2C80%2040%2C115%205%2C80%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");

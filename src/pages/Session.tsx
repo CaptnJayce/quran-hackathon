@@ -33,7 +33,7 @@ export function Session() {
 	const [popupItems, setPopupItems] = useState<{ amount: number; reason: string; name: string }[]>([])
 	const [streakPlayers, setStreakPlayers] = useState<Set<string>>(new Set())
 	const lastPopupRef = useRef('')
-	const popupClearRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+	const popupClearRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	const advanceTurn = useCallback(async () => {
 		if (!currentParticipant) return
@@ -61,9 +61,9 @@ export function Session() {
 			setStreakPlayers((prev) => new Set(prev).add(reader.id))
 		}
 
+		if (popupClearRef.current) clearTimeout(popupClearRef.current)
 		setPopupItems(items)
 		lastPopupRef.current = JSON.stringify(items)
-		clearTimeout(popupClearRef.current)
 		popupClearRef.current = setTimeout(() => setPopupItems([]), 3000)
 		await supabase.from('turn_state').update({ popup_data: items }).eq('room_id', id)
 	}, [currentParticipant, turnState, rawAdvanceTurn, ayahs.length, id, navigate, addPoints])
@@ -96,8 +96,8 @@ export function Session() {
 		const key = JSON.stringify(turnState.popup_data)
 		if (key === lastPopupRef.current) return
 		lastPopupRef.current = key
+		if (popupClearRef.current) clearTimeout(popupClearRef.current)
 		setPopupItems(turnState.popup_data)
-		clearTimeout(popupClearRef.current)
 		popupClearRef.current = setTimeout(() => setPopupItems([]), 3000)
 	}, [turnState?.popup_data])
 
