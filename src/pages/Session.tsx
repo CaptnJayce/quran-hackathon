@@ -160,11 +160,13 @@ export function Session() {
 
 			<div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
 
-				<AyahDisplay
-					ayah={currentAyah}
-					readerName={currentParticipant?.display_name ?? ''}
-					onWordTap={(word) => fetchMeaning(word)}
-				/>
+				<div key={currentAyah.verse_key} className="animate-ayah-in w-full flex justify-center">
+					<AyahDisplay
+						ayah={currentAyah}
+						readerName={currentParticipant?.display_name ?? ''}
+						onWordTap={(word) => fetchMeaning(word)}
+					/>
+				</div>
 
 				{showTranslation && (
 					<TranslationPanel
@@ -212,11 +214,9 @@ export function Session() {
 				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
 			)}
 
-		{popupItems.length > 0 && (
-			<div className="fixed inset-x-0 top-[27%] z-30 flex flex-col items-center pointer-events-none">
-				<PointPopup items={popupItems} />
-			</div>
-			)}
+		<div className="fixed inset-x-0 top-[27%] z-30 flex flex-col items-center pointer-events-none">
+			<PointPopup items={popupItems} />
+		</div>
 		</div>
 	)
 }
