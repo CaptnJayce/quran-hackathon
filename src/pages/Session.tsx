@@ -12,7 +12,7 @@ import { WordLens } from '../components/session/WordLens'
 import { ProgressBar } from '../components/session/ProgressBar'
 import { DoneButton } from '../components/session/DoneButton'
 import { PointPopup } from '../components/session/PointPopup'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { usePoints } from '../hooks/usePoints'
 import { useAhsanta } from '../hooks/useAhsanta'
@@ -32,6 +32,7 @@ export function Session() {
 	const [showTranslation, setShowTranslation] = useState(false)
 	const [popupItems, setPopupItems] = useState<{ amount: number; reason: string; name: string }[]>([])
 	const [streakPlayers, setStreakPlayers] = useState<Set<string>>(new Set())
+	const lastPopupRef = useRef('')
 
 	const advanceTurn = useCallback(async () => {
 		if (!currentParticipant) return
@@ -60,6 +61,10 @@ export function Session() {
 		}
 
 		setPopupItems(items)
+		lastPopupRef.current = JSON.stringify(items)
+		setTimeout(() => setPopupItems([]), 3000)
+
+		await supabase.from('turn_state').update({ popup_data: items }).eq('room_id', id)
 	}, [currentParticipant, turnState, rawAdvanceTurn, ayahs.length, id, navigate, addPoints])
 
 	const currentAyahIndex = (turnState?.current_ayah ?? 1) - 1
@@ -84,6 +89,15 @@ export function Session() {
 			rawAdvanceTurn(ayahs.length, () => navigate(`/summary/${id}`))
 		}
 	}, [loaded, currentParticipant, participants, turnState, rawAdvanceTurn, ayahs.length, id, navigate])
+
+	useEffect(() => {
+		if (!turnState?.popup_data || turnState.popup_data.length === 0) return
+		const key = JSON.stringify(turnState.popup_data)
+		if (key === lastPopupRef.current) return
+		lastPopupRef.current = key
+		setPopupItems(turnState.popup_data)
+		setTimeout(() => setPopupItems([]), 3000)
+	}, [turnState?.popup_data])
 
 	const roomLoaded = loaded && room !== null
 	const selectionMade = !!(room?.surah_id || room?.juz_number)
@@ -197,10 +211,10 @@ export function Session() {
 				<WordLens meaning={meaning} isLoading={wordLensLoading} onClose={clear} />
 			)}
 
-			{popupItems.length > 0 && (
-				<div className="fixed inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
-					<PointPopup items={popupItems} />
-				</div>
+		{popupItems.length > 0 && (
+			<div className="fixed inset-x-0 top-1/3 z-30 flex flex-col items-center pointer-events-none">
+				<PointPopup items={popupItems} />
+			</div>
 			)}
 		</div>
 	)

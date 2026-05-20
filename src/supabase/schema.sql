@@ -33,6 +33,7 @@ create table turn_state (
   ahsanta_votes   jsonb default '[]'::jsonb,
   ahsanta_count   int default 0,
   no_skip_counter int default 0,
+  popup_data      jsonb,
   updated_at      timestamptz default now()
 );
 

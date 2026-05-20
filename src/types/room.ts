@@ -29,5 +29,6 @@ export interface TurnState {
 	ahsanta_votes: string[]
 	ahsanta_count: number
 	no_skip_counter: number
+	popup_data: { amount: number; reason: string; name: string }[] | null
 	updated_at: string
 }
