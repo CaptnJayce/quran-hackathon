@@ -33,6 +33,7 @@ export function Session() {
 	const [popupItems, setPopupItems] = useState<{ amount: number; reason: string; name: string }[]>([])
 	const [streakPlayers, setStreakPlayers] = useState<Set<string>>(new Set())
 	const lastPopupRef = useRef('')
+	const popupClearRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
 	const advanceTurn = useCallback(async () => {
 		if (!currentParticipant) return
@@ -62,8 +63,8 @@ export function Session() {
 
 		setPopupItems(items)
 		lastPopupRef.current = JSON.stringify(items)
-		setTimeout(() => setPopupItems([]), 3000)
-
+		clearTimeout(popupClearRef.current)
+		popupClearRef.current = setTimeout(() => setPopupItems([]), 3000)
 		await supabase.from('turn_state').update({ popup_data: items }).eq('room_id', id)
 	}, [currentParticipant, turnState, rawAdvanceTurn, ayahs.length, id, navigate, addPoints])
 
@@ -96,7 +97,8 @@ export function Session() {
 		if (key === lastPopupRef.current) return
 		lastPopupRef.current = key
 		setPopupItems(turnState.popup_data)
-		setTimeout(() => setPopupItems([]), 3000)
+		clearTimeout(popupClearRef.current)
+		popupClearRef.current = setTimeout(() => setPopupItems([]), 3000)
 	}, [turnState?.popup_data])
 
 	const roomLoaded = loaded && room !== null
@@ -211,7 +213,7 @@ export function Session() {
 			)}
 
 		{popupItems.length > 0 && (
-			<div className="fixed inset-x-0 top-1/3 z-30 flex flex-col items-center pointer-events-none">
+			<div className="fixed inset-x-0 top-[27%] z-30 flex flex-col items-center pointer-events-none">
 				<PointPopup items={popupItems} />
 			</div>
 			)}
