@@ -1,26 +1,10 @@
-import { useState, useEffect } from 'react'
-import { getVerseTranslation } from '../../lib/quranApi'
-
 interface Props {
-	verseKey: string
 	initialText: string
 	onClose: () => void
 }
 
-export function TranslationPanel({ verseKey, initialText, onClose }: Props) {
-	const [text, setText] = useState(initialText)
-	const [loading, setLoading] = useState(false)
-
-	useEffect(() => {
-		if (initialText !== 'Translation not available.') return
-		setLoading(true)
-		getVerseTranslation(verseKey).then((t) => {
-			if (t) setText(t)
-			setLoading(false)
-		})
-	}, [verseKey, initialText])
-
-	const clean = text.replace(/<[^>]+>/g, '')
+export function TranslationPanel({ initialText, onClose }: Props) {
+	const text = initialText.replace(/<[^>]+>/g, '')
 
 	return (
 		<div className="fixed inset-0 z-30 flex items-center justify-center p-4" onClick={onClose}>
@@ -30,11 +14,7 @@ export function TranslationPanel({ verseKey, initialText, onClose }: Props) {
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="flex items-start justify-between gap-3">
-					{loading ? (
-						<p className="text-ink-faint text-sm">Loading translation...</p>
-					) : (
-						<p className="text-ink-secondary text-sm leading-relaxed">{clean}</p>
-					)}
+					<p className="text-ink-secondary text-sm leading-relaxed">{text}</p>
 					<button
 						onClick={onClose}
 						className="shrink-0 text-ink-faint hover:text-ink transition-colors cursor-pointer"
